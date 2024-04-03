@@ -1,0 +1,32 @@
+.btn {
+    padding: 0 24px;
+    margin: 0;
+    border: none;
+    font-size: 16px;
+    height: 42px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    background: #eee;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover:not(&:disabled),
+    &:focus:not(&:disabled) {
+        background: #ddd;
+    }
+
+    &:disabled {
+        cursor: default;
+        color: rgba(0,0,0,0.3);
+    }
+}
+
+.s {
+    font-size: 12px;
+    padding: 0 10px;
+    height: 26px;
+}

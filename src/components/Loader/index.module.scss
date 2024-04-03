@@ -1,0 +1,16 @@
+.loader {
+    color: rgba(0,0,0,0.15);
+    display: block;
+    width: 16px;
+    height: 16px;
+    animation: rotate 1s linear infinite;
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+}

@@ -1,0 +1,46 @@
+.root {
+    max-width: 1024px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 50px;
+    box-sizing: border-box;
+    @media (max-width: 767px) {
+        padding: 20px;
+    }
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 50px;
+    @media (max-width: 767px) {
+        padding: 20px;
+    }
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.form {
+    display: flex;
+    gap: 16px;
+    @media (max-width: 767px) {
+        flex-direction: column;
+    }
+}
+
+.input {
+    flex-grow: 1;
+}

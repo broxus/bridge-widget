@@ -1,0 +1,27 @@
+.root {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    border: 2px solid #eee;
+    border-radius: 4px;
+    padding: 12px;
+    font-size: 14px;
+    overflow: auto;
+    &::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+        background-color: #aaa;
+    }
+}
+
+.copy {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}

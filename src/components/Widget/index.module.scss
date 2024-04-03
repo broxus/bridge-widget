@@ -1,0 +1,22 @@
+.root {
+    border: 2px solid #eee;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.address {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .input {
+        flex-grow: 1;
+    }
+
+    @media (max-width: 767px) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
