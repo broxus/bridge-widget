@@ -1,15 +1,19 @@
+import { Loader } from '@/components/Loader'
 import * as React from 'react'
-import ReactSelect, { GroupBase, Props } from 'react-select'
+import ReactSelect, { GroupBase } from 'react-select'
+import ReactSelectCreatable, { CreatableProps } from 'react-select/creatable'
 
 export function Select<
     OptionType,
     IsMulti extends boolean = false,
     GroupType extends GroupBase<OptionType> = GroupBase<OptionType>,
->(props: Props<OptionType, IsMulti, GroupType>): JSX.Element {
+>(props: CreatableProps<OptionType, IsMulti, GroupType>): JSX.Element {
+    const SelectElement = props.onCreateOption ? ReactSelectCreatable : ReactSelect
     return (
-        <ReactSelect
+        <SelectElement
             {...props}
             components={{
+                ...props.components,
                 IndicatorSeparator: null,
                 DropdownIndicator: ({ isFocused, innerProps }) => (
                     <div
@@ -32,6 +36,7 @@ export function Select<
                         </svg>
                     </div>
                 ),
+                LoadingIndicator: () => <Loader size={16} />,
             }}
             styles={{
                 control: (base, state) => ({
@@ -44,6 +49,7 @@ export function Select<
                     borderRadius: '4px',
                     boxShadow: undefined,
                     cursor: state.isDisabled ? 'default' : 'pointer',
+                    opacity: state.isDisabled ? 0.4 : 1,
                     '&:hover': {
                         borderColor: undefined,
                     },
@@ -64,7 +70,7 @@ export function Select<
                 input: provided => ({
                     ...provided,
                     margin: '0px',
-                    color: '#fff',
+                    color: '#000',
                     fontSize: '16px',
                     fontWeight: 400,
                 }),
@@ -74,6 +80,7 @@ export function Select<
                 indicatorsContainer: provided => ({
                     ...provided,
                     height: '38px',
+                    gap: '8px',
                 }),
                 placeholder: base => ({
                     ...base,
@@ -99,14 +106,17 @@ export function Select<
                     background: state.isSelected ? '#11a97c' : state.isFocused ? '#eee' : 'transparent',
                     fontSize: '16px',
                     fontWeight: 400,
+                    padding: '10px 12px',
                     '&:active': {
                         background: state.isSelected ? '#11a97c' : '#eee',
                     },
                     '&:first-of-type': {
-                        borderRadius: '4px 4px 0 0',
+                        borderTopLeftRadius: '4px',
+                        borderTopRightRadius: '4px',
                     },
                     '&:last-of-type': {
-                        borderRadius: '0 0 4px 4px',
+                        borderBottomLeftRadius: '4px',
+                        borderBottomRightRadius: '4px',
                     },
                 }),
             }}

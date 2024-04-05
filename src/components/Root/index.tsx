@@ -24,11 +24,21 @@ export const Root: React.FC = () => (
         <div className={styles.container}>
             <div className={styles.section}>
                 <h1 className={styles.title}>
+                    Widget example
+                </h1>
+
+                <Widget />
+            </div>
+
+            {
+                /* <div className={styles.section}>
+                <h1 className={styles.title}>
                     Integrate widget
                 </h1>
 
                 <form className={styles.form}>
                     <Input
+                        readOnly
                         className={styles.input}
                         placeholder='Token Address'
                     />
@@ -40,15 +50,8 @@ export const Root: React.FC = () => (
                 <Code
                     value={code}
                 />
-            </div>
-
-            <div className={styles.section}>
-                <h1 className={styles.title}>
-                    Widget example
-                </h1>
-
-                <Widget />
-            </div>
+            </div> */
+            }
         </div>
     </div>
 )

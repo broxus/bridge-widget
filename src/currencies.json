@@ -17,7 +17,7 @@
             "name": "VENOM",
             "symbol": "VENOM",
             "chainId": "1",
-            "logoURI": "/assets/icons/VENOM.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/WVENOM/logo.svg",
             "decimals": 9,
             "address": "0:77d36848bb159fa485628bc38dc37eadb74befa514395e09910f601b841f749e"
         },
@@ -28,7 +28,7 @@
             "symbol": "ETH",
             "chainId": "1",
             "decimals": 18,
-            "logoURI": "/assets/icons/ETH.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/WETH/logo.svg",
             "address": "0:60b3ebf994515df7985cb62a9d141467edf2f869272baf507dc83d9ba2e1b199"
         },
         {
@@ -37,7 +37,7 @@
             "symbol": "BNB",
             "chainId": "1",
             "decimals": 18,
-            "logoURI": "/assets/icons/BNB.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/BNB/logo.svg",
             "address": "0:0a75b9ad65982b02493491b00454b34dcecb9e63700d560fc001473659297661"
         },
         {
@@ -46,7 +46,7 @@
             "symbol": "FTM",
             "chainId": "1",
             "decimals": 18,
-            "logoURI": "/assets/icons/FTM.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/FTM/logo.svg",
             "address": "0:3558fbc02e33cd62a5c2702f9405e272c41ede875956d2179074fe25bb4d1ce8"
         },
         {
@@ -55,7 +55,7 @@
             "symbol": "MATIC",
             "chainId": "1",
             "decimals": 18,
-            "logoURI": "/assets/icons/MATIC.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/MATIC/logo.svg",
             "address": "0:e04e68f58e85ea3ce3976356c4aefaa47c983bd9394bcf2a16c2252e7c27a39e"
         },
         {
@@ -64,7 +64,7 @@
             "symbol": "AVAX",
             "chainId": "1",
             "decimals": 18,
-            "logoURI": "/assets/icons/AVAX.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/AVAX/logo.svg",
             "address": "0:10d6d5c11f7ce319842b9ceb8bc9ee4d64f317cd99f1f4ce17985e7ef50e2d2d"
         },
 
@@ -74,7 +74,7 @@
             "symbol": "ETH",
             "chainId": "1",
             "decimals": 18,
-            "logoURI": "/assets/icons/ETH.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/WETH/logo.svg",
             "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
             "wrappedName": "Wrapped ETH",
             "wrappedSymbol": "WETH"
@@ -85,7 +85,7 @@
             "symbol": "BNB",
             "chainId": "56",
             "decimals": 18,
-            "logoURI": "/assets/icons/BNB.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/BNB/logo.svg",
             "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
             "wrappedName": "Wrapped BNB",
             "wrappedSymbol": "WBNB"
@@ -96,7 +96,7 @@
             "symbol": "FTM",
             "chainId": "250",
             "decimals": 18,
-            "logoURI": "/assets/icons/FTM.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/FTM/logo.svg",
             "address": "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
             "wrappedName": "Wrapped FTM",
             "wrappedSymbol": "WFTM"
@@ -107,7 +107,7 @@
             "symbol": "MATIC",
             "chainId": "137",
             "decimals": 18,
-            "logoURI": "/assets/icons/MATIC.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/MATIC/logo.svg",
             "address": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
             "wrappedName": "Wrapped MATIC",
             "wrappedSymbol": "WMATIC"
@@ -118,7 +118,7 @@
             "symbol": "AVAX",
             "chainId": "43114",
             "decimals": 18,
-            "logoURI": "/assets/icons/AVAX.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/AVAX/logo.svg",
             "address": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
             "wrappedName": "Wrapped AVAX",
             "wrappedSymbol": "WAVAX"
@@ -129,7 +129,7 @@
             "name": "VENOM",
             "symbol": "VENOM",
             "chainId": "1",
-            "logoURI": "/assets/icons/VENOM.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/WVENOM/logo.svg",
             "decimals": 9,
             "address": "0x46F84DC6564Cdd93922F7BFb88B03D35308D87C9"
         },
@@ -138,7 +138,7 @@
             "name": "VENOM",
             "symbol": "VENOM",
             "chainId": "56",
-            "logoURI": "/assets/icons/VENOM.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/WVENOM/logo.svg",
             "decimals": 9,
             "address": "0x46F84DC6564Cdd93922F7BFb88B03D35308D87C9"
         },
@@ -147,7 +147,7 @@
             "name": "VENOM",
             "symbol": "VENOM",
             "chainId": "250",
-            "logoURI": "/assets/icons/VENOM.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/WVENOM/logo.svg",
             "decimals": 9,
             "address": "0x46F84DC6564Cdd93922F7BFb88B03D35308D87C9"
         },
@@ -156,7 +156,7 @@
             "name": "VENOM",
             "symbol": "VENOM",
             "chainId": "137",
-            "logoURI": "/assets/icons/VENOM.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/WVENOM/logo.svg",
             "decimals": 9,
             "address": "0x46F84DC6564Cdd93922F7BFb88B03D35308D87C9"
         },
@@ -165,7 +165,7 @@
             "name": "VENOM",
             "symbol": "VENOM",
             "chainId": "43114",
-            "logoURI": "/assets/icons/VENOM.svg",
+            "logoURI": "https://cdn.venom.foundation/assets/mainnet/icons/WVENOM/logo.svg",
             "decimals": 9,
             "address": "0x46F84DC6564Cdd93922F7BFb88B03D35308D87C9"
         }

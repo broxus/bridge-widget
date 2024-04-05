@@ -13,7 +13,7 @@ export const rpc = new ProviderRpcClient({
                     if (window.__venom) {
                         resolve(window.__venom)
                         clearInterval(interval)
-                    } else if (tries >= 10) {
+                    } else if (tries >= 3) {
                         reject(new Error('Provider not founded'))
                         clearInterval(interval)
                     }

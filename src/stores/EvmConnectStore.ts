@@ -1,16 +1,21 @@
 /* eslint-disable prefer-destructuring */
 import { getNetworkById } from '@/utils/bridge'
+import { lastOfCalls } from '@/utils/last-of-calls'
 import { MetaMaskInpageProvider } from '@metamask/providers'
+import { ethers } from 'ethers'
 import { makeAutoObservable, runInAction } from 'mobx'
 import Web3 from 'web3'
 
 export class EvmConnectStore {
     provider?: MetaMaskInpageProvider = undefined
+    browserProvider?: ethers.BrowserProvider = undefined
     chainId?: string = undefined
     address?: string = undefined
     balance?: string = undefined
+    extInstalled?: boolean | undefined = undefined
     initialized = false
     loading = false
+    blockNum?: number | undefined = undefined
 
     constructor() {
         makeAutoObservable(this, {}, {
@@ -19,34 +24,42 @@ export class EvmConnectStore {
     }
 
     async init(): Promise<void> {
-        runInAction(() => {
-            this.loading = true
-        })
+        this.loading = true
+        let extInstalled = false
         try {
             this.provider?.removeListener('accountsChanged', this.syncData)
             this.provider?.removeListener('chainChanged', this.syncData)
             this.provider?.removeListener('disconnect', this.disconnect)
+            this.browserProvider?.removeListener('block', this.onBlock.call)
 
             this.provider = EvmConnectStore.getProvider()
+            this.browserProvider = new ethers.BrowserProvider(this.provider)
+            extInstalled = true
 
             this.provider.on('accountsChanged', this.syncData)
             this.provider.on('chainChanged', this.syncData)
             this.provider.on('disconnect', this.disconnect)
+            this.browserProvider.addListener('block', this.onBlock.call)
 
             await this.connect()
         } catch (e) {
             console.error(e)
         }
         runInAction(() => {
+            this.extInstalled = extInstalled
             this.initialized = true
             this.loading = false
         })
     }
 
-    async connect(): Promise<void> {
+    onBlock = lastOfCalls(async (e: number) => {
         runInAction(() => {
-            this.loading = true
+            this.blockNum = e
         })
+    }, 500)
+
+    async connect(): Promise<void> {
+        this.loading = true
         try {
             await this.provider?.request({ method: 'eth_requestAccounts' })
             await this.syncData()
@@ -59,11 +72,9 @@ export class EvmConnectStore {
     }
 
     disconnect(): void {
-        runInAction(() => {
-            this.address = undefined
-            this.balance = undefined
-            this.chainId = undefined
-        })
+        this.address = undefined
+        this.balance = undefined
+        this.chainId = undefined
     }
 
     async syncData(): Promise<void> {
@@ -114,7 +125,7 @@ export class EvmConnectStore {
                             nativeCurrency: {
                                 decimals: 18,
                                 name: network.currency.symbol,
-                                symbol: network.currency.symbol
+                                symbol: network.currency.symbol,
                             },
                             blockExplorerUrls: [network.explorer.baseUrl],
                         }],

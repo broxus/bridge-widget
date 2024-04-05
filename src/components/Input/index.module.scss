@@ -30,6 +30,9 @@
 }
 
 .postfix {
+    gap: 8px;
+    display: flex;
+    align-items: center;
     padding-right: 12px;
     white-space: nowrap;
 }

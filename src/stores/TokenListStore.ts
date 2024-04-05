@@ -3,12 +3,14 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import { AlienTokenListURI, TokenListURI } from '@/config'
 import currencies from '@/currencies.json'
 import { Token } from '@/types'
-import { getNetworkId, getTokenId, getTokenType } from '@/utils/bridge'
+import { getEvmToken, getNetworkById, getNetworkId, getTokenId, getTokenType, getTvmToken } from '@/utils/bridge'
 
 export class TokenListStore {
     gasTokens: Token[] = []
     tokens: Token[] = []
-    isReady = false
+    extraTokens: Token[] = []
+    ready = false
+    loader = 0
 
     constructor() {
         makeAutoObservable(this, {}, {
@@ -39,24 +41,48 @@ export class TokenListStore {
             runInAction(() => {
                 this.tokens = unique
                 this.gasTokens = currencies.tokens
-                this.isReady = true
+                this.ready = true
             })
         } catch (e) {
             console.error(e)
             runInAction(() => {
                 this.tokens = []
                 this.gasTokens = []
-                this.isReady = false
+                this.ready = false
             })
         }
     }
 
+    async addToken(networkId: string, address: string) {
+        let tokenId: string | undefined
+        this.loader += 1
+        try {
+            const tokenType = getTokenType({ address })
+            const token = tokenType === 'evm'
+                ? await getEvmToken(address, getNetworkById(networkId))
+                : await getTvmToken(address)
+            const entries = [...this.extraTokens, token].map(item => [getTokenId(item), item] as const)
+            const unique = Object.values(Object.fromEntries(entries))
+            tokenId = getTokenId(token)
+            runInAction(() => {
+                this.extraTokens = unique
+            })
+        } catch (e) {
+            console.error(e)
+        }
+        runInAction(() => {
+            this.loader -= 1
+        })
+        return tokenId
+    }
+
     get byId(): { [k: string]: Token | undefined } {
-        return Object.fromEntries(this.tokens.map(item => [getTokenId(item), item]))
+        return Object.fromEntries([...this.tokens, ...this.extraTokens]
+            .map(item => [getTokenId(item), item]))
     }
 
     get byNetwork(): { [k: string]: Token[] | undefined } {
-        return this.tokens.reduce<{ [k: string]: Token[] }>((acc, item) => {
+        return [...this.tokens, ...this.extraTokens].reduce<{ [k: string]: Token[] }>((acc, item) => {
             const networkId = getNetworkId({
                 chainId: item.chainId,
                 type: getTokenType(item),
@@ -70,5 +96,9 @@ export class TokenListStore {
 
     get gasTokensById(): { [k: string]: Token | undefined } {
         return Object.fromEntries(this.gasTokens.map(item => [getTokenId(item), item]))
+    }
+
+    get loading(): boolean {
+        return this.loader > 0
     }
 }

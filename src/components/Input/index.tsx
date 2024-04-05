@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+import { Loader } from '@/components/Loader'
 import classNames from 'classnames'
 import styles from './index.module.scss'
 
@@ -12,6 +13,7 @@ type Props = {
     disabled?: boolean
     readOnly?: boolean
     postfix?: React.ReactNode
+    loading?: boolean
 }
 
 export const Input: React.FC<Props> = ({
@@ -23,6 +25,7 @@ export const Input: React.FC<Props> = ({
     disabled,
     readOnly,
     postfix,
+    loading,
 }) => {
     const [focus, setFocus] = React.useState(false)
     return (
@@ -41,8 +44,9 @@ export const Input: React.FC<Props> = ({
                     onBlur?.(e)
                 }}
             />
-            {postfix && (
+            {(postfix || loading) && (
                 <div className={styles.postfix}>
+                    {loading && <Loader size={16} />}
                     {postfix}
                 </div>
             )}
