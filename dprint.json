@@ -1,5 +1,5 @@
 {
-    "lineWidth": 220,
+    "lineWidth": 120,
     "indentWidth": 4,
     "typescript": {
         "semiColons": "asi",
@@ -9,7 +9,9 @@
     "markdown": {},
     "excludes": [
         "**/node_modules",
-        "**/*-lock.json"
+        "**/*-lock.json",
+        "./dist",
+        "./widget"
     ],
     "plugins": [
         "https://plugins.dprint.dev/typescript-0.88.10.wasm",

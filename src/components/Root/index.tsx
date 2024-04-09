@@ -1,57 +1,67 @@
 import * as React from 'react'
 
-import { Button } from '@/components/Button'
 import { Code } from '@/components/Code'
 import { Input } from '@/components/Input'
-import { Widget } from '@/components/Widget'
+import { useProvider, useStore } from '@/hooks/useStore'
+import { ConstructorStore } from '@/stores/ConstructorStore'
+import { action } from 'mobx'
+import { observer } from 'mobx-react-lite'
 import styles from './index.module.scss'
+import useClipboard from 'react-use-clipboard'
+import { Button } from '@/components/Button'
 
-const code = `<h1 className={styles.title}>
-    Integrate Widget
-</h1>
-<form className={styles.form}>
-    <Input
-        className={styles.input}
-        placeholder='Token address'
-    />
-    <Button>
-        Get Widget
-    </Button>
-</form>`
+export const Root: React.FC = observer(() => {
+    const ConstructorProvider = useProvider(ConstructorStore)
+    const constructor = useStore(ConstructorStore)
 
-export const Root: React.FC = () => (
-    <div className={styles.root}>
-        <div className={styles.container}>
-            <div className={styles.section}>
-                <h1 className={styles.title}>
-                    Widget example
-                </h1>
+    const code = `<iframe src="${constructor.iframeURL}" style="border: 0px; height: 693px;"></iframe>`
+    const [isCopied, setCopied] = useClipboard(code, { successDuration: 1000 })
 
-                <Widget />
+    return (
+        <ConstructorProvider value={constructor}>
+            <div className={styles.root}>
+                <div className={styles.container}>
+                    <div className={styles.section}>
+                        <h1 className={styles.title}>
+                            Integrate widget
+                        </h1>
+
+                        <Input
+                            className={styles.input}
+                            placeholder='Output token address'
+                            value={constructor.outputTokenAddress}
+                            onChange={action(e => {
+                                constructor.outputTokenAddress = e.currentTarget.value
+                            })}
+                        />
+
+                        <Code
+                            value={code}
+                        />
+                        <Button
+                            size="s"
+                            onClick={setCopied}
+                            className={styles.copy}
+                        >
+                            {isCopied ? 'Copied' : 'Copy'}
+                        </Button>
+                    </div>
+
+                    <div className={styles.section}>
+                        <h1 className={styles.title}>
+                            Widget example
+                        </h1>
+
+                        <iframe
+                            src={constructor.iframeURL}
+                            style={{
+                                border: 0,
+                                height: 693,
+                            }}
+                        />
+                    </div>
+                </div>
             </div>
-
-            {
-                /* <div className={styles.section}>
-                <h1 className={styles.title}>
-                    Integrate widget
-                </h1>
-
-                <form className={styles.form}>
-                    <Input
-                        readOnly
-                        className={styles.input}
-                        placeholder='Token Address'
-                    />
-                    <Button>
-                        Get Widget
-                    </Button>
-                </form>
-
-                <Code
-                    value={code}
-                />
-            </div> */
-            }
-        </div>
-    </div>
-)
+        </ConstructorProvider>
+    )
+})

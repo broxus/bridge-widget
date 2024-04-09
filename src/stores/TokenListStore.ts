@@ -3,7 +3,17 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import { AlienTokenListURI, TokenListURI } from '@/config'
 import currencies from '@/currencies.json'
 import { Token } from '@/types'
-import { getEvmToken, getNetworkById, getNetworkId, getTokenId, getTokenType, getTvmToken } from '@/utils/bridge'
+import {
+    getEvmToken,
+    getNetworkById,
+    getNetworkId,
+    getTokenId,
+    getTokenIdAddress,
+    getTokenIdChain,
+    getTokenIdType,
+    getTokenType,
+    getTvmToken,
+} from '@/utils/bridge'
 
 export class TokenListStore {
     gasTokens: Token[] = []
@@ -53,17 +63,24 @@ export class TokenListStore {
         }
     }
 
-    async addToken(networkId: string, address: string) {
-        let tokenId: string | undefined
+    async addToken(tokenId: string): Promise<boolean> {
+        if (this.byId[tokenId]) {
+            return true
+        }
+        let success = false
         this.loader += 1
         try {
-            const tokenType = getTokenType({ address })
+            const tokenType = getTokenIdType(tokenId)
+            const address = getTokenIdAddress(tokenId)
+            const chainId = getTokenIdChain(tokenId)
+            const networkId = getNetworkId({ chainId, type: tokenType })
             const token = tokenType === 'evm'
                 ? await getEvmToken(address, getNetworkById(networkId))
                 : await getTvmToken(address)
             const entries = [...this.extraTokens, token].map(item => [getTokenId(item), item] as const)
             const unique = Object.values(Object.fromEntries(entries))
             tokenId = getTokenId(token)
+            success = true
             runInAction(() => {
                 this.extraTokens = unique
             })
@@ -73,7 +90,7 @@ export class TokenListStore {
         runInAction(() => {
             this.loader -= 1
         })
-        return tokenId
+        return success
     }
 
     get byId(): { [k: string]: Token | undefined } {

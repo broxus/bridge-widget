@@ -7,6 +7,10 @@
     padding: 12px;
     font-size: 14px;
     overflow: auto;
+    background: #fff;
+    word-break: break-all;
+    white-space: pre-wrap;
+
     &::-webkit-scrollbar {
         height: 4px;
     }
@@ -15,13 +19,9 @@
         border-radius: 3px;
         background-color: #aaa;
     }
-}
 
-.copy {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    display: flex;
-    gap: 4px;
-    align-items: center;
+    code {
+        word-break: break-all;
+        line-height: 1.4;
+    }
 }

@@ -106,7 +106,9 @@ export function Select<
                     background: state.isSelected ? '#11a97c' : state.isFocused ? '#eee' : 'transparent',
                     fontSize: '16px',
                     fontWeight: 400,
-                    padding: '10px 12px',
+                    padding: '9px 12px',
+                    lineHeight: '20px',
+                    wordBreak: 'break-word',
                     '&:active': {
                         background: state.isSelected ? '#11a97c' : '#eee',
                     },

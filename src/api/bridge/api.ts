@@ -1251,7 +1251,9 @@ export class HttpClient<SecurityDataType = unknown> {
         const query = rawQuery || {}
         const keys = Object.keys(query).filter((key) => 'undefined' !== typeof query[key])
         return keys
-            .map((key) => (Array.isArray(query[key]) ? this.addArrayQueryParam(query, key) : this.addQueryParam(query, key)))
+            .map((
+                key,
+            ) => (Array.isArray(query[key]) ? this.addArrayQueryParam(query, key) : this.addQueryParam(query, key)))
             .join('&')
     }
 
@@ -1261,8 +1263,11 @@ export class HttpClient<SecurityDataType = unknown> {
     }
 
     private contentFormatters: Record<ContentType, (input: any) => any> = {
-        [ContentType.Json]: (input: any) => input !== null && (typeof input === 'object' || typeof input === 'string') ? JSON.stringify(input) : input,
-        [ContentType.Text]: (input: any) => (input !== null && typeof input !== 'string' ? JSON.stringify(input) : input),
+        [ContentType.Json]: (input: any) =>
+            input !== null && (typeof input === 'object' || typeof input === 'string') ? JSON.stringify(input) : input,
+        [ContentType.Text]: (
+            input: any,
+        ) => (input !== null && typeof input !== 'string' ? JSON.stringify(input) : input),
         [ContentType.FormData]: (input: any) =>
             Object.keys(input || {}).reduce((formData, key) => {
                 const property = input[key]

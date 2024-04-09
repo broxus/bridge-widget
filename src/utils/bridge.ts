@@ -62,6 +62,10 @@ export const getTokenIdType = (tokenId: string): 'tvm' | 'evm' | 'unknown' => {
     return 'unknown'
 }
 
+export function getTokenIdChain(tokenId: string): string {
+    return tokenId.split('-')[1]
+}
+
 export function getTokenIdAddress(tokenId: string): string {
     return tokenId.split('-')[2]
 }

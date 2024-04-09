@@ -5,6 +5,7 @@ import { Field } from '@/components/Field'
 import { Input } from '@/components/Input'
 import { Loader } from '@/components/Loader'
 import { Select } from '@/components/Select'
+import { SuccessScreen } from '@/components/SuccessScreen'
 import { networks } from '@/config'
 import { useAmountField } from '@/hooks/useAmountField'
 import { useProvider, useStore } from '@/hooks/useStore'
@@ -17,9 +18,14 @@ import { formattedTokenAmount } from '@broxus/js-utils'
 import { action, runInAction } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import styles from './index.module.scss'
-import { SuccessScreen } from '@/components/SuccessScreen'
 
-export const Widget: React.FC = observer(() => {
+type Props = {
+    outputTokenAddress?: string
+}
+
+export const Widget: React.FC<Props> = observer(({
+    outputTokenAddress,
+}) => {
     const EvmConnectProvider = useProvider(EvmConnectStore)
     const TvmConnectProvider = useProvider(TvmConnectStore)
     const TokenListProvider = useProvider(TokenListStore)
@@ -28,6 +34,8 @@ export const Widget: React.FC = observer(() => {
     const evmConnect = useStore(EvmConnectStore)
     const tvmConnect = useStore(TvmConnectStore)
     const form = useStore(WidgetFormStore, tokenList, evmConnect, tvmConnect)
+    const [inputTokenLoading, setInputTokeLoading] = React.useState(false)
+    const [outputTokenLoading, setOutputTokeLoading] = React.useState(false)
 
     const networkOptions = networks
         .filter(item => item.type === 'evm')
@@ -55,24 +63,41 @@ export const Widget: React.FC = observer(() => {
         onBlur: action(e => form.amount = e),
     })
 
-    const createInputToken = action(async (e: string) => {
+    const onCreateInputToken = action(async (e: string) => {
+        setInputTokeLoading(true)
         try {
-            if (form.inputNetworkId) {
-                form.inputTokenId = await tokenList.addToken(form.inputNetworkId, e)
+            if (form.inputNetwork) {
+                const tokenId = getTokenId({ chainId: form.inputNetwork.chainId, address: e })
+                const added = await tokenList.addToken(tokenId)
+                runInAction(() => {
+                    form.inputTokenId = added ? tokenId : undefined
+                })
             }
         } catch (e) {
             console.error(e)
         }
+        setInputTokeLoading(false)
     })
 
-    const createOutputToken = action(async (e: string) => {
+    const onCreateOutputToken = async (e: string) => {
+        setOutputTokeLoading(true)
         try {
-            const outputNetworkId = getNetworkId({ chainId: 1, type: 'tvm' })
-            form.outputTokenId = await tokenList.addToken(outputNetworkId, e)
+            const tokenId = getTokenId({ chainId: 1, address: e })
+            const added = await tokenList.addToken(tokenId)
+            runInAction(() => {
+                form.outputTokenId = added ? tokenId : undefined
+            })
         } catch (e) {
             console.error(e)
         }
-    })
+        setOutputTokeLoading(false)
+    }
+
+    React.useEffect(() => {
+        if (outputTokenAddress) {
+            onCreateOutputToken(outputTokenAddress)
+        }
+    }, [outputTokenAddress])
 
     return (
         <WidgetFormProvider value={form}>
@@ -194,16 +219,19 @@ export const Widget: React.FC = observer(() => {
 
                             <Field label='Input token'>
                                 <Select
-                                    placeholder={`Select or enter ${form.inputNetwork?.shortName ?? ''} address`}
-                                    isLoading={!tokenList.ready || tokenList.loading}
-                                    isDisabled={!tokenList.ready || tokenList.loading || !form.inputNetworkId || !!form.txHash}
+                                    maxMenuHeight={152}
+                                    placeholder={`Select or enter ${form.inputNetwork?.shortName ?? 'EVM'} address`}
+                                    isLoading={!tokenList.ready || inputTokenLoading}
+                                    isDisabled={!tokenList.ready || !!form.txHash}
                                     options={inputTokenOptions}
                                     onChange={e => runInAction(() => form.inputTokenId = e?.value)}
                                     value={inputTokenOptions.find(item => item.value === form.inputTokenId) ?? null}
-                                    onCreateOption={createInputToken}
+                                    onCreateOption={onCreateInputToken}
                                     formatOptionLabel={({ label, value }) => (
                                         <div className={styles.option}>
-                                            {tokenList.byId[value]?.logoURI && <img src={tokenList.byId[value]?.logoURI} width={18} height={18} />}
+                                            {tokenList.byId[value]?.logoURI && (
+                                                <img src={tokenList.byId[value]?.logoURI} width={18} height={18} />
+                                            )}
                                             {label}
                                         </div>
                                     )}
@@ -225,16 +253,19 @@ export const Widget: React.FC = observer(() => {
 
                             <Field label='Output token'>
                                 <Select
+                                    maxMenuHeight={152}
                                     placeholder='Select or enter Venom address'
-                                    isLoading={!tokenList.ready}
+                                    isLoading={!tokenList.ready || outputTokenLoading}
                                     isDisabled={!tokenList.ready || !!form.txHash}
                                     options={outputTokenOptions}
                                     onChange={e => runInAction(() => form.outputTokenId = e?.value)}
                                     value={outputTokenOptions.find(item => item.value === form.outputTokenId) ?? null}
-                                    onCreateOption={createOutputToken}
+                                    onCreateOption={onCreateOutputToken}
                                     formatOptionLabel={({ label, value }) => (
                                         <div className={styles.option}>
-                                            {tokenList.byId[value]?.logoURI && <img src={tokenList.byId[value]?.logoURI} width={18} height={18} />}
+                                            {tokenList.byId[value]?.logoURI && (
+                                                <img src={tokenList.byId[value]?.logoURI} width={18} height={18} />
+                                            )}
                                             {label}
                                         </div>
                                     )}
@@ -248,24 +279,26 @@ export const Widget: React.FC = observer(() => {
                                 />
                             </Field>
 
-                            {form.txHash ? (
-                                <Button onClick={form.reset}>
-                                    New transfer
-                                </Button>
-                            ) : (
-                                <Button
-                                    submit
-                                    disabled={!form.readyToExchange}
-                                >
-                                    {form.loading
-                                        ? <Loader />
-                                        : form.notEnoughLiquidity
-                                        ? 'Not enough liquidity'
-                                        : form.amountEnough === false
-                                        ? 'Insufficient balance'
-                                        : 'Exchange'}
-                                </Button>
-                            )}
+                            {form.txHash
+                                ? (
+                                    <Button onClick={form.reset}>
+                                        New transfer
+                                    </Button>
+                                )
+                                : (
+                                    <Button
+                                        submit
+                                        disabled={!form.readyToExchange}
+                                    >
+                                        {form.loading
+                                            ? <Loader />
+                                            : form.notEnoughLiquidity
+                                            ? 'Not enough liquidity'
+                                            : form.amountEnough === false
+                                            ? 'Insufficient balance'
+                                            : 'Exchange'}
+                                    </Button>
+                                )}
 
                             <SuccessScreen />
                         </form>
