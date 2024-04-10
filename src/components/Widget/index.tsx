@@ -112,7 +112,7 @@ export const Widget: React.FC<Props> = observer(({
                                 form.exchange()
                             }}
                         >
-                            <Field label='Meta Mask'>
+                            <Field label='MetaMask'>
                                 {evmConnect.address
                                     ? (
                                         <div className={styles.address}>
