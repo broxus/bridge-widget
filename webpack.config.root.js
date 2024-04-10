@@ -14,7 +14,6 @@ export default (env, argv) => {
 
         entry: {
             'main': './src/index.tsx',
-            'widget': './src/widget.tsx',
         },
 
         output: {
@@ -42,12 +41,6 @@ export default (env, argv) => {
                 minify: true,
                 chunks: ['main'],
                 filename: 'index.html',
-            }),
-            new HtmlWebpackPlugin({
-                template: './src/index.html',
-                minify: true,
-                chunks: ['widget'],
-                filename: 'widget.html',
             }),
         ],
 

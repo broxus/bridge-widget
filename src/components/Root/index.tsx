@@ -20,45 +20,47 @@ export const Root: React.FC = observer(() => {
     return (
         <ConstructorProvider value={constructor}>
             <div className={styles.root}>
-                <div className={styles.container}>
-                    <div className={styles.section}>
-                        <h1 className={styles.title}>
-                            Integrate widget
-                        </h1>
+                <div className={styles.inner}>
+                    <div className={styles.container}>
+                        <div className={styles.section}>
+                            <h1 className={styles.title}>
+                                Integrate widget
+                            </h1>
 
-                        <Input
-                            className={styles.input}
-                            placeholder='Output token address'
-                            value={constructor.outputTokenAddress}
-                            onChange={action(e => {
-                                constructor.outputTokenAddress = e.currentTarget.value
-                            })}
-                        />
+                            <Input
+                                className={styles.input}
+                                placeholder='Output token address'
+                                value={constructor.outputTokenAddress}
+                                onChange={action(e => {
+                                    constructor.outputTokenAddress = e.currentTarget.value
+                                })}
+                            />
 
-                        <Code
-                            value={code}
-                        />
-                        <Button
-                            size='s'
-                            onClick={setCopied}
-                            className={styles.copy}
-                        >
-                            {isCopied ? 'Copied' : 'Copy'}
-                        </Button>
-                    </div>
+                            <Code
+                                value={code}
+                            />
+                            <Button
+                                size='s'
+                                onClick={setCopied}
+                                className={styles.copy}
+                            >
+                                {isCopied ? 'Copied' : 'Copy'}
+                            </Button>
+                        </div>
 
-                    <div className={styles.section}>
-                        <h1 className={styles.title}>
-                            Widget example
-                        </h1>
+                        <div className={styles.section}>
+                            <h1 className={styles.title}>
+                                Widget example
+                            </h1>
 
-                        <iframe
-                            src={constructor.iframeURL}
-                            style={{
-                                border: 0,
-                                height: 567,
-                            }}
-                        />
+                            <iframe
+                                src={constructor.iframeURL}
+                                style={{
+                                    border: 0,
+                                    height: 567,
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
