@@ -197,6 +197,8 @@ export const Widget: React.FC<Props> = observer(({
 
                             <Field label='Input blockchain'>
                                 <Select
+                                    placeholder='Select blockchain'
+                                    maxMenuHeight={190}
                                     isLoading={!tokenList.ready}
                                     isDisabled={!tokenList.ready || !!form.txHash}
                                     options={networkOptions}
@@ -213,6 +215,7 @@ export const Widget: React.FC<Props> = observer(({
 
                             <Field label='Input token'>
                                 <Select
+                                    maxMenuHeight={190}
                                     placeholder={`Select or enter ${form.inputNetwork?.shortName ?? 'EVM'} address`}
                                     isLoading={!tokenList.ready || inputTokenLoading}
                                     isDisabled={!tokenList.ready || !!form.txHash}
@@ -236,8 +239,22 @@ export const Widget: React.FC<Props> = observer(({
                                 />
                             </Field>
 
+                            <Field label='Input amount'>
+                                <Input
+                                    disabled={!!form.txHash}
+                                    placeholder='Enter amount'
+                                    value={form.amount}
+                                    onChange={amountField.onChange}
+                                    onBlur={amountField.onBlur}
+                                    postfix={form.balance && form.inputToken
+                                        ? `Balance: ${formattedTokenAmount(form.balance, form.inputToken.decimals)}`
+                                        : undefined}
+                                />
+                            </Field>
+
                             <Field label='Output token'>
                                 <Select
+                                    maxMenuHeight={114}
                                     placeholder='Select or enter Venom address'
                                     isLoading={!tokenList.ready || outputTokenLoading}
                                     isDisabled={!tokenList.ready || !!form.txHash}
@@ -261,32 +278,9 @@ export const Widget: React.FC<Props> = observer(({
                                 />
                             </Field>
 
-                            <Field label='Amount'>
-                                <Input
-                                    prefix={form.inputToken ? (
-                                        form.inputToken.logoURI
-                                            ? <img src={form.inputToken.logoURI} width={18} height={18} />
-                                            : <UserAvatar address={form.inputToken.address} size={18} />
-                                    ) : undefined}
-                                    disabled={!!form.txHash}
-                                    placeholder='Enter amount'
-                                    value={form.amount}
-                                    onChange={amountField.onChange}
-                                    onBlur={amountField.onBlur}
-                                    postfix={form.balance && form.inputToken
-                                        ? `Balance: ${formattedTokenAmount(form.balance, form.inputToken.decimals)}`
-                                        : undefined}
-                                />
-                            </Field>
-
-                            <Field label='Min amount to receive'>
+                            <Field label='Minimum receive'>
                                 <Input
                                     readOnly
-                                    prefix={form.outputToken ? (
-                                        form.outputToken.logoURI
-                                            ? <img src={form.outputToken.logoURI} width={18} height={18} />
-                                            : <UserAvatar address={form.outputToken.address} size={18} />
-                                    ) : undefined}
                                     value={form.amountToReceive ? formattedTokenAmount(form.amountToReceive) : ''}
                                 />
                             </Field>
