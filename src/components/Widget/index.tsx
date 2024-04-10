@@ -278,7 +278,7 @@ export const Widget: React.FC<Props> = observer(({
                                 />
                             </Field>
 
-                            <Field label='Minimum receive'>
+                            <Field label='Minimum receive1'>
                                 <Input
                                     readOnly
                                     value={form.amountToReceive ? formattedTokenAmount(form.amountToReceive) : ''}
