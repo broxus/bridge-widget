@@ -14,6 +14,8 @@ type Props = {
     readOnly?: boolean
     postfix?: React.ReactNode
     loading?: boolean
+    invalid?: boolean
+    prefix?: React.ReactNode
 }
 
 export const Input: React.FC<Props> = ({
@@ -26,10 +28,25 @@ export const Input: React.FC<Props> = ({
     readOnly,
     postfix,
     loading,
+    invalid,
+    prefix,
 }) => {
     const [focus, setFocus] = React.useState(false)
     return (
-        <div className={classNames(styles.root, focus ? styles.focus : null, className)}>
+        <div
+            className={classNames(
+                styles.root,
+                focus ? styles.focus : null,
+                invalid ? styles.invalid : null,
+                prefix ? styles.withPrefix : null,
+                className,
+            )}
+        >
+            {prefix && (
+                <div className={styles.prefix}>
+                    {prefix}
+                </div>
+            )}
             <input
                 type='text'
                 readOnly={readOnly}

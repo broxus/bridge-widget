@@ -9,7 +9,6 @@ type Props = {
     size?: number
 }
 
-
 const circles = [
     {
         cx: 3,
@@ -112,7 +111,7 @@ const circles = [
 export const UserAvatar: React.FC<Props> = ({
     address,
     className,
-    size = 24
+    size = 24,
 }) => {
     const colors = React.useMemo(() => getColors(address), [address])
 
@@ -120,9 +119,9 @@ export const UserAvatar: React.FC<Props> = ({
         <svg
             width={size}
             height={size}
-            viewBox="0 0 36 36"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+            viewBox='0 0 36 36'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
             className={classNames(styles.root, className)}
         >
             <g>

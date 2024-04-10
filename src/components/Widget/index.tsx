@@ -6,6 +6,7 @@ import { Input } from '@/components/Input'
 import { Loader } from '@/components/Loader'
 import { Select } from '@/components/Select'
 import { SuccessScreen } from '@/components/SuccessScreen'
+import { UserAvatar } from '@/components/UserAvatar'
 import { networks } from '@/config'
 import { useAmountField } from '@/hooks/useAmountField'
 import { useProvider, useStore } from '@/hooks/useStore'
@@ -18,7 +19,6 @@ import { formattedTokenAmount } from '@broxus/js-utils'
 import { action, runInAction } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import styles from './index.module.scss'
-import { UserAvatar } from '@/components/UserAvatar'
 
 type Props = {
     outputTokenAddress?: string
@@ -148,10 +148,7 @@ export const Widget: React.FC<Props> = observer(({
                                     )}
                             </Field>
 
-                            <Field
-                                label='Venom Wallet'
-                                error={form.wrongOutputAddress ? 'Invalid venom address' : undefined}
-                            >
+                            <Field label='Venom Wallet'>
                                 {tvmConnect.address
                                     ? (
                                         <div className={styles.address}>
@@ -161,7 +158,6 @@ export const Widget: React.FC<Props> = observer(({
                                                 className={styles.input}
                                             />
                                             <Button
-                                                width={150}
                                                 disabled={tvmConnect.disabled}
                                                 onClick={tvmConnect.disconnect}
                                             >
@@ -172,6 +168,7 @@ export const Widget: React.FC<Props> = observer(({
                                     : (
                                         <div className={styles.address}>
                                             <Input
+                                                invalid={form.wrongOutputAddress}
                                                 placeholder='Enter address or connect'
                                                 className={styles.input}
                                                 value={form.outputAddress}
@@ -181,16 +178,12 @@ export const Widget: React.FC<Props> = observer(({
                                             />
                                             {tvmConnect.initialized && !tvmConnect.extInstalled
                                                 ? (
-                                                    <Button
-                                                        width={150}
-                                                        href='https://venomwallet.com/'
-                                                    >
+                                                    <Button href='https://venomwallet.com/'>
                                                         Install Venom
                                                     </Button>
                                                 )
                                                 : (
                                                     <Button
-                                                        width={150}
                                                         disabled={tvmConnect.disabled || !tvmConnect.initialized}
                                                         onClick={tvmConnect.connect}
                                                     >
@@ -218,10 +211,8 @@ export const Widget: React.FC<Props> = observer(({
                                 />
                             </Field>
 
-
                             <Field label='Input token'>
                                 <Select
-                                    maxMenuHeight={152}
                                     placeholder={`Select or enter ${form.inputNetwork?.shortName ?? 'EVM'} address`}
                                     isLoading={!tokenList.ready || inputTokenLoading}
                                     isDisabled={!tokenList.ready || !!form.txHash}
@@ -233,11 +224,11 @@ export const Widget: React.FC<Props> = observer(({
                                         const token = tokenList.byId[value]
                                         return (
                                             <div className={styles.option}>
-                                                {token?.logoURI ? (
-                                                    <img src={token?.logoURI} width={18} height={18} />
-                                                ) : token?.address ? (
-                                                    <UserAvatar address={token.address} size={18} />
-                                                ) : null}
+                                                {token?.logoURI
+                                                    ? <img src={token?.logoURI} width={18} height={18} />
+                                                    : token?.address
+                                                    ? <UserAvatar address={token.address} size={18} />
+                                                    : null}
                                                 {label}
                                             </div>
                                         )
@@ -245,24 +236,8 @@ export const Widget: React.FC<Props> = observer(({
                                 />
                             </Field>
 
-                            <Field label='Amount'>
-                                <Input
-                                    disabled={!!form.txHash}
-                                    placeholder='Enter amount'
-                                    value={form.amount}
-                                    onChange={amountField.onChange}
-                                    onBlur={amountField.onBlur}
-                                    postfix={form.balance && form.inputToken
-                                        ? `Balance: ${
-                                            formattedTokenAmount(form.balance, form.inputToken.decimals)
-                                        }`
-                                        : undefined}
-                                />
-                            </Field>
-
                             <Field label='Output token'>
                                 <Select
-                                    maxMenuHeight={152}
                                     placeholder='Select or enter Venom address'
                                     isLoading={!tokenList.ready || outputTokenLoading}
                                     isDisabled={!tokenList.ready || !!form.txHash}
@@ -274,11 +249,11 @@ export const Widget: React.FC<Props> = observer(({
                                         const token = tokenList.byId[value]
                                         return (
                                             <div className={styles.option}>
-                                                {token?.logoURI ? (
-                                                    <img src={token?.logoURI} width={18} height={18} />
-                                                ) : token?.address ? (
-                                                    <UserAvatar address={token.address} size={18} />
-                                                ) : null}
+                                                {token?.logoURI
+                                                    ? <img src={token?.logoURI} width={18} height={18} />
+                                                    : token?.address
+                                                    ? <UserAvatar address={token.address} size={18} />
+                                                    : null}
                                                 {label}
                                             </div>
                                         )
@@ -286,9 +261,32 @@ export const Widget: React.FC<Props> = observer(({
                                 />
                             </Field>
 
+                            <Field label='Amount'>
+                                <Input
+                                    prefix={form.inputToken ? (
+                                        form.inputToken.logoURI
+                                            ? <img src={form.inputToken.logoURI} width={18} height={18} />
+                                            : <UserAvatar address={form.inputToken.address} size={18} />
+                                    ) : undefined}
+                                    disabled={!!form.txHash}
+                                    placeholder='Enter amount'
+                                    value={form.amount}
+                                    onChange={amountField.onChange}
+                                    onBlur={amountField.onBlur}
+                                    postfix={form.balance && form.inputToken
+                                        ? `Balance: ${formattedTokenAmount(form.balance, form.inputToken.decimals)}`
+                                        : undefined}
+                                />
+                            </Field>
+
                             <Field label='Min amount to receive'>
                                 <Input
                                     readOnly
+                                    prefix={form.outputToken ? (
+                                        form.outputToken.logoURI
+                                            ? <img src={form.outputToken.logoURI} width={18} height={18} />
+                                            : <UserAvatar address={form.outputToken.address} size={18} />
+                                    ) : undefined}
                                     value={form.amountToReceive ? formattedTokenAmount(form.amountToReceive) : ''}
                                 />
                             </Field>
@@ -298,14 +296,17 @@ export const Widget: React.FC<Props> = observer(({
                                     <Button onClick={form.reset}>
                                         New transfer
                                     </Button>
-                                ) : form.wrongNetwork ? (
+                                )
+                                : form.wrongNetwork
+                                ? (
                                     <Button
                                         disabled={evmConnect.disabled}
                                         onClick={() => evmConnect.changeNetwork(form.inputNetworkId!)}
                                     >
                                         Change Network
                                     </Button>
-                                ) : (
+                                )
+                                : (
                                     <Button
                                         submit
                                         disabled={!form.readyToExchange}
@@ -316,10 +317,11 @@ export const Widget: React.FC<Props> = observer(({
                                             ? 'Not enough liquidity'
                                             : (form.amountEnough === false || form.valueEnough === false)
                                             ? 'Insufficient balance'
+                                            : form.wrongOutputAddress
+                                            ? 'Invalid venom address'
                                             : 'Exchange'}
                                     </Button>
                                 )}
-
                             <SuccessScreen />
                         </form>
                     </EvmConnectProvider>

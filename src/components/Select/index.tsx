@@ -41,13 +41,12 @@ export function Select<
             styles={{
                 control: (base, state) => ({
                     ...base,
-                    minHeight: '42px',
-                    height: '42px',
+                    minHeight: '36px',
+                    height: '36px',
                     background: '#fff',
-                    borderColor: state.isFocused ? '#11a97c' : '#eee',
-                    borderWidth: '2px',
+                    borderWidth: 0,
                     borderRadius: '4px',
-                    boxShadow: undefined,
+                    boxShadow: state.isFocused ? '0 0 0 2px #11a97c' : 'inset 0 0 0 1px #eee',
                     cursor: state.isDisabled ? 'default' : 'pointer',
                     opacity: state.isDisabled ? 0.4 : 1,
                     '&:hover': {
@@ -56,14 +55,14 @@ export function Select<
                 }),
                 valueContainer: base => ({
                     ...base,
-                    height: '38px',
+                    height: '32px',
                     paddingLeft: '12px',
                     paddingRight: '12px',
                 }),
                 singleValue: base => ({
                     ...base,
                     margin: 0,
-                    fontSize: '16px',
+                    fontSize: '14px',
                     color: '#000',
                     fontWeight: 400,
                 }),
@@ -71,7 +70,7 @@ export function Select<
                     ...provided,
                     margin: '0px',
                     color: '#000',
-                    fontSize: '16px',
+                    fontSize: '14px',
                     fontWeight: 400,
                 }),
                 indicatorSeparator: () => ({
@@ -79,20 +78,20 @@ export function Select<
                 }),
                 indicatorsContainer: provided => ({
                     ...provided,
-                    height: '38px',
-                    gap: '8px',
+                    height: '34px',
+                    gap: '12px',
                 }),
                 placeholder: base => ({
                     ...base,
                     color: '#999',
-                    fontSize: '16px',
+                    fontSize: '14px',
                     fontWeight: 400,
                     marginLeft: 0,
                     marginRight: 0,
                 }),
                 menu: base => ({
                     ...base,
-                    boxShadow: 'inset 0 0 0 2px #eee',
+                    boxShadow: 'inset 0 0 0 1px #eee',
                     background: '#fff',
                     borderRadius: '4px',
                 }),
@@ -104,7 +103,7 @@ export function Select<
                 option: (base, state) => ({
                     ...base,
                     background: state.isSelected ? '#11a97c' : state.isFocused ? '#eee' : 'transparent',
-                    fontSize: '16px',
+                    fontSize: '14px',
                     fontWeight: 400,
                     padding: '9px 12px',
                     lineHeight: '20px',
@@ -120,6 +119,10 @@ export function Select<
                         borderBottomLeftRadius: '4px',
                         borderBottomRightRadius: '4px',
                     },
+                }),
+                noOptionsMessage: (base) => ({
+                    ...base,
+                    fontSize: '14px',
                 }),
             }}
         />

@@ -1,18 +1,18 @@
 .root {
     position: relative;
     border: 2px solid #eee;
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
     background: #fff;
 }
 
 .address {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
 
     .input {
         flex-grow: 1;
@@ -26,5 +26,5 @@
 .option {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
