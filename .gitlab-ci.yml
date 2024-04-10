@@ -1,0 +1,74 @@
+include:
+  - project: "infrastructure/gitlab-ci"
+    ref: main
+    file: "/templates/cloudbuild-common.gitlab-ci.yaml"
+  - project: "infrastructure/gitlab-ci"
+    ref: main
+    file: "templates/deploy.gitlab-ci.yaml"
+
+stages:
+  - cloudbuild
+  - deploy
+
+cloudbuild:image:master:
+  only:
+    - master
+  except:
+    - tags
+  extends: .cloudbuild:common
+  before_script:
+    - !reference [.image_branch, before_script]
+    - rm -rf src/config.ts && cp config/stage.ts src/config.ts
+
+deploy:master:
+  only:
+    - master
+  except:
+    - tags
+  extends: .deploy
+  environment:
+    name: stage
+    on_stop: stop:master
+
+stop:master:
+  only:
+    - master
+  except:
+    - tags
+  extends: .stop
+  environment:
+    name: stage
+
+cloudbuild:image:prod:
+  only:
+    - prod
+  except:
+    - tags
+  extends: .cloudbuild:common
+  before_script:
+    - !reference [.image_branch, before_script]
+    - rm -rf src/config.ts && cp config/prod.ts src/config.ts
+
+deploy:prod:
+  only:
+    - prod
+  except:
+    - tags
+  extends: .deploy
+  environment:
+    name: venom-network-prod
+    on_stop: stop:prod
+  tags:
+    - docker-venom-network-prod
+
+
+stop:prod:
+  only:
+    - prod
+  except:
+    - tags
+  extends: .stop
+  environment:
+    name: venom-network-prod
+  tags:
+    - docker-venom-network-prod
