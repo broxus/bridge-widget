@@ -10,7 +10,7 @@ RUN \
     apt-get install -y nodejs
 
 # .editorconfig .stylelintrc .eslintignore .eslintrc.js
-COPY package.json package-lock.json tsconfig.json webpack.config.common.js webpack.config.root.js webpack.config.widget.js ./
+COPY package.json package-lock.json tsconfig.json webpack.config.js ./
 RUN \
     set -eux; \
     npm ci
