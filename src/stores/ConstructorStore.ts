@@ -11,7 +11,6 @@ export class ConstructorStore {
 
     get iframeURL(): string {
         const url = new URL(IFRAME_BASE_URL)
-        url.searchParams.append('view', 'widget')
         if (this.outputTokenAddress && isTvmAddress(this.outputTokenAddress)) {
             url.searchParams.append('token', this.outputTokenAddress)
         }

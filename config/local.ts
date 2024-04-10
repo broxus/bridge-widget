@@ -16,7 +16,7 @@ export const WVENOMVaultRootAddress = new AddressLiteral(
     '0:77d36848bb159fa485628bc38dc37eadb74befa514395e09910f601b841f749e',
 )
 
-export const IFRAME_BASE_URL = 'http://localhost:3000'
+export const IFRAME_BASE_URL = 'http://localhost:3000/widget.html'
 
 export const networks: NetworkConfig[] = [
     {

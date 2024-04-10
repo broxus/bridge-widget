@@ -12,11 +12,12 @@ export default (env, argv) => {
     return {
         ...getCommonConfig(isProduction),
 
-        entry: './src/index.tsx',
+        entry: {
+            main: './src/index.tsx',
+            widget: './src/widget.tsx',
+        },
 
         output: {
-            filename: '[name].[contenthash].js',
-            chunkFilename: '[id].[contenthash].js',
             path: path.resolve(__dirname, 'dist'),
             clean: true,
         },
@@ -39,6 +40,13 @@ export default (env, argv) => {
                 template: './src/index.html',
                 minify: true,
                 filename: 'index.html',
+                chunks: ['main']
+            }),
+            new HtmlWebpackPlugin({
+                template: './src/index.html',
+                minify: true,
+                filename: 'widget.html',
+                chunks: ['widget']
             }),
         ],
 
