@@ -1,7 +1,15 @@
 TODO
 
 - Show error message
+- Show connection error message
 - Connect btn on submit button if not connected
+
+
+BACK LOG
+
+- Add token to wallet btn
+- Styles
+
 
 SUCCESS
 
@@ -19,8 +27,3 @@ SUCCESS
 - Add token default icon
 - Output token addres in config
 - Loader in widget.html
-
-BACK LOG
-
-- Add token to wallet btn
-- Styles

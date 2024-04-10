@@ -293,14 +293,19 @@ export const Widget: React.FC<Props> = observer(({
                                 />
                             </Field>
 
-
                             {form.txHash
                                 ? (
                                     <Button onClick={form.reset}>
                                         New transfer
                                     </Button>
-                                )
-                                : (
+                                ) : form.wrongNetwork ? (
+                                    <Button
+                                        disabled={evmConnect.disabled}
+                                        onClick={() => evmConnect.changeNetwork(form.inputNetworkId!)}
+                                    >
+                                        Change Network
+                                    </Button>
+                                ) : (
                                     <Button
                                         submit
                                         disabled={!form.readyToExchange}

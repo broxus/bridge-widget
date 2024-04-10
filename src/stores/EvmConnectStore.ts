@@ -27,21 +27,24 @@ export class EvmConnectStore {
         this.loading = true
         let extInstalled = false
         try {
-            this.provider?.removeListener('accountsChanged', this.syncData)
             this.provider?.removeListener('chainChanged', this.syncData)
+            this.provider?.removeListener('chainChanged', this.initBlockListener)
+            this.provider?.removeListener('accountsChanged', this.onAccountsChanged)
             this.provider?.removeListener('disconnect', this.disconnect)
-            this.browserProvider?.removeListener('block', this.onBlock.call)
 
             this.provider = EvmConnectStore.getProvider()
-            this.browserProvider = new ethers.BrowserProvider(this.provider)
             extInstalled = true
 
-            this.provider.on('accountsChanged', this.syncData)
             this.provider.on('chainChanged', this.syncData)
+            this.provider.on('chainChanged', this.initBlockListener)
+            this.provider.on('accountsChanged', this.onAccountsChanged)
             this.provider.on('disconnect', this.disconnect)
-            this.browserProvider.addListener('block', this.onBlock.call)
 
-            await this.connect()
+            this.initBlockListener()
+
+            if (localStorage.getItem('evm_connection')) {
+                await this.connect()
+            }
         } catch (e) {
             console.error(e)
         }
@@ -50,6 +53,13 @@ export class EvmConnectStore {
             this.initialized = true
             this.loading = false
         })
+    }
+
+    initBlockListener() {
+        this.browserProvider?.removeAllListeners()
+        this.browserProvider?.destroy()
+        this.browserProvider = this.provider ? new ethers.BrowserProvider(this.provider) : undefined
+        this.browserProvider?.addListener('block', this.onBlock.call)
     }
 
     onBlock = lastOfCalls(async (e: number) => {
@@ -72,9 +82,18 @@ export class EvmConnectStore {
     }
 
     disconnect(): void {
+        localStorage.removeItem('evm_connection')
         this.address = undefined
         this.balance = undefined
         this.chainId = undefined
+    }
+
+    onAccountsChanged(e: unknown) {
+        if (Array.isArray(e) && e.length) {
+            this.syncData()
+        } else {
+            this.disconnect()
+        }
     }
 
     async syncData(): Promise<void> {
@@ -92,6 +111,8 @@ export class EvmConnectStore {
                 address = _address
                 chainId = _chainId
                 balance = _balance
+
+                localStorage.setItem('evm_connection', 'metamask')
             } catch (e) {
                 console.error('evm sync data', e)
             }
