@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { createRoot } from 'react-dom/client'
 
-import './index.scss'
+import './widget.scss'
 import { Widget } from '@/components/Widget'
 
 const url = new URL(window.location.href)
