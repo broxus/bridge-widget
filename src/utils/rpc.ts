@@ -17,7 +17,7 @@ export const rpc = new ProviderRpcClient({
                         reject(new Error('Provider not founded'))
                         clearInterval(interval)
                     }
-                }, 500)
+                }, 100)
             }
         }),
 })

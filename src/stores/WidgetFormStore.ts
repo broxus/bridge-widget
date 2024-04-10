@@ -20,14 +20,14 @@ import { comparer, makeAutoObservable, reaction, runInAction } from 'mobx'
 export class WidgetFormStore {
     loader = 0
     payloadLoader = 0
-    balance?: string = undefined
+    walletBalance?: string = undefined
+    tokenBalance?: string = undefined
     amount?: string = undefined
     inputNetworkId?: string = undefined
     inputTokenId?: string = undefined
     outputTokenId?: string = undefined
     bridgePayload?: EvmTvmResponse = undefined
     bridgePayloadParams?: EvmTvmRequest = undefined
-    swapRequired?: boolean = undefined
     swapPayload?: SwapPayload = undefined
     swapPayloadToken?: Token = undefined
     bridgeEvmToken?: Token = undefined
@@ -35,6 +35,7 @@ export class WidgetFormStore {
     notEnoughLiquidity?: boolean = undefined
     outputAddress?: string = undefined
     txHash?: string | undefined = undefined
+    rate?: string | undefined = undefined
 
     protected reactions = new Reactions()
 
@@ -42,6 +43,7 @@ export class WidgetFormStore {
     protected getEvmTokenBalance = lastOfCalls(getEvmTokenBalance, 200)
     protected getEvmToken = lastOfCalls(getEvmToken, 200)
     protected deriveTvmToken = lastOfCalls(bridgeApi.payload.calcDestinationTokenCreate.bind(bridgeApi), 200)
+    protected getRate = lastOfCalls(bridgeApi.gatePrices.gatePricesCreate.bind(bridgeApi), 200)
     protected buildBridgePayload = lastOfCalls(bridgeApi.payload.buildCreate.bind(bridgeApi), 300)
     protected buildSwapPayload = lastOfCalls(dexApi.middleware.middlewareCreate.bind(dexApi), 300)
 
@@ -56,14 +58,40 @@ export class WidgetFormStore {
     init() {
         this.reactions.create(
             reaction(
-                () => this.evmConnect.blockNum,
-                this.syncBalance,
-            ),
-            reaction(
                 () => this.inputNetworkId,
                 () => {
                     this.inputTokenId = undefined
-                    this.balance = undefined
+                    this.tokenBalance = undefined
+                },
+            ),
+            reaction(
+                () => [
+                    this.inputNetwork,
+                    this.evmConnect.blockNum,
+                ],
+                this.syncRate,
+                {
+                    equals: comparer.structural,
+                },
+            ),
+            reaction(
+                () => this.evmConnect.blockNum,
+                () => {
+                    this.syncTokenBalance()
+                    this.syncWalletBalance()
+                },
+            ),
+            reaction(
+                () => [
+                    this.inputNetwork,
+                    this.evmConnect.address,
+                ],
+                () => {
+                    this.walletBalance = undefined
+                    this.syncWalletBalance()
+                },
+                {
+                    equals: comparer.structural,
                 },
             ),
             reaction(
@@ -74,8 +102,8 @@ export class WidgetFormStore {
                     this.isGasToken,
                 ],
                 () => {
-                    this.balance = undefined
-                    this.syncBalance()
+                    this.tokenBalance = undefined
+                    this.syncTokenBalance()
                 },
                 {
                     equals: comparer.structural,
@@ -134,14 +162,13 @@ export class WidgetFormStore {
     }
 
     reset() {
-        this.balance = undefined
+        this.tokenBalance = undefined
         this.amount = undefined
         this.inputNetworkId = undefined
         this.inputTokenId = undefined
         this.outputTokenId = undefined
         this.bridgePayload = undefined
         this.bridgePayloadParams = undefined
-        this.swapRequired = undefined
         this.swapPayload = undefined
         this.swapPayloadToken = undefined
         this.bridgeEvmToken = undefined
@@ -151,34 +178,50 @@ export class WidgetFormStore {
         this.txHash = undefined
     }
 
-    async syncBalance() {
-        let balance: string | undefined
+    async syncWalletBalance() {
+        let walletBalance: string | undefined
         this.getEvmBalance.skip()
+        try {
+            if (
+                this.evmConnect.address
+                && this.inputNetwork
+            ) {
+                const result = await this.getEvmBalance.call(
+                    this.evmConnect.address,
+                    this.inputNetwork.rpcUrl,
+                )
+                walletBalance = result.skip ? this.walletBalance : result.result
+            }
+        } catch (e) {
+            console.error(e)
+        }
+        runInAction(() => {
+            this.walletBalance = walletBalance
+        })
+    }
+
+    async syncTokenBalance() {
+        let tokenBalance: string | undefined
         this.getEvmTokenBalance.skip()
         try {
             if (
                 this.inputToken
                 && this.evmConnect.address
                 && this.inputNetwork
-                && this.isGasToken !== undefined
+                && this.isGasToken === false
             ) {
-                const result = this.isGasToken
-                    ? await this.getEvmBalance.call(
-                        this.evmConnect.address,
-                        this.inputNetwork.rpcUrl,
-                    )
-                    : await this.getEvmTokenBalance.call(
-                        this.inputNetwork.rpcUrl,
-                        this.inputToken.address,
-                        this.evmConnect.address,
-                    )
-                balance = result.skip ? this.balance : result.result
+                const result = await this.getEvmTokenBalance.call(
+                    this.inputNetwork.rpcUrl,
+                    this.inputToken.address,
+                    this.evmConnect.address,
+                )
+                tokenBalance = result.skip ? this.tokenBalance : result.result
             }
         } catch (e) {
             console.error(e)
         }
         runInAction(() => {
-            this.balance = balance
+            this.tokenBalance = tokenBalance
         })
     }
 
@@ -244,6 +287,32 @@ export class WidgetFormStore {
         })
     }
 
+    async syncRate() {
+        let rate: string | undefined
+        this.getRate.skip()
+        runInAction(() => {
+            this.loader += 1
+        })
+        try {
+            if (this.inputNetwork) {
+                const result = await this.getRate.call({
+                    ticker: this.inputNetwork.currency.symbol,
+                })
+                if (result.skip) {
+                    rate = this.rate
+                } else {
+                    rate = (await result.result.json()).price
+                }
+            }
+        } catch (e) {
+            console.error(e)
+        }
+        runInAction(() => {
+            this.rate = rate
+            this.loader -= 1
+        })
+    }
+
     async syncBridgePayload() {
         let bridgePayload: EvmTvmResponse | undefined
         let bridgePayloadParams: EvmTvmRequest | undefined
@@ -299,7 +368,6 @@ export class WidgetFormStore {
 
     async syncSwapPayload() {
         let swapPayload: SwapPayload | undefined
-        let swapRequired: boolean | undefined
         let swapPayloadToken: Token | undefined
         let notEnoughLiquidity: boolean | undefined
         this.buildSwapPayload.skip()
@@ -315,47 +383,41 @@ export class WidgetFormStore {
                 && this.outputToken
                 && this.bridgeEvmToken
             ) {
-                if (this.bridgeTvmToken.address === this.outputToken.address) {
-                    swapRequired = false
-                } else {
-                    const token = this.outputToken
-                    const result = await this.buildSwapPayload.call({
-                        input: {
-                            swap: {
-                                amount: normalizeAmount(
-                                    decimalAmount(this.bridgeAmountToReceive, this.bridgeEvmToken.decimals),
-                                    this.bridgeTvmToken.decimals,
-                                ),
-                                cancelPayload: {
-                                    tokenReceiver: this.outputTvmAddress,
-                                    deployWalletValue: '200000000',
-                                    valueForFinalTransfer: '200000000',
-                                },
-                                deep: 3,
-                                fromCurrencyAddress: this.bridgeTvmToken.address,
-                                minTvl: '0.1',
-                                remainingGasTo: this.outputTvmAddress,
-                                successPayload: {
-                                    deployWalletValue: '200000000',
-                                    tokenReceiver: this.outputTvmAddress,
-                                    valueForFinalTransfer: '200000000',
-                                },
-                                toCurrencyAddress: this.outputToken.address,
-                                whiteListCurrencies: WHITE_LIST_CURRENCIES,
-                                direction: 'expectedexchange',
-                                slippage: '0.05',
+                const token = this.outputToken
+                const result = await this.buildSwapPayload.call({
+                    input: {
+                        swap: {
+                            amount: normalizeAmount(
+                                decimalAmount(this.bridgeAmountToReceive, this.bridgeEvmToken.decimals),
+                                this.bridgeTvmToken.decimals,
+                            ),
+                            cancelPayload: {
+                                tokenReceiver: this.outputTvmAddress,
+                                deployWalletValue: '200000000',
+                                valueForFinalTransfer: '200000000',
                             },
+                            deep: 3,
+                            fromCurrencyAddress: this.bridgeTvmToken.address,
+                            minTvl: '0.1',
+                            remainingGasTo: this.outputTvmAddress,
+                            successPayload: {
+                                deployWalletValue: '200000000',
+                                tokenReceiver: this.outputTvmAddress,
+                                valueForFinalTransfer: '200000000',
+                            },
+                            toCurrencyAddress: this.outputToken.address,
+                            whiteListCurrencies: WHITE_LIST_CURRENCIES,
+                            direction: 'expectedexchange',
+                            slippage: '0.05',
                         },
-                    })
-                    if (result.skip) {
-                        swapPayload = this.swapPayload
-                        swapRequired = this.swapRequired
-                        swapPayloadToken = this.swapPayloadToken
-                    } else if ('swap' in result.result.data.output) {
-                        swapPayload = result.result.data.output.swap
-                        swapRequired = true
-                        swapPayloadToken = token
-                    }
+                    },
+                })
+                if (result.skip) {
+                    swapPayload = this.swapPayload
+                    swapPayloadToken = this.swapPayloadToken
+                } else if ('swap' in result.result.data.output) {
+                    swapPayload = result.result.data.output.swap
+                    swapPayloadToken = token
                 }
             }
         } catch (e) {
@@ -365,7 +427,6 @@ export class WidgetFormStore {
         runInAction(() => {
             this.notEnoughLiquidity = notEnoughLiquidity
             this.swapPayloadToken = swapPayloadToken
-            this.swapRequired = swapRequired
             this.swapPayload = swapPayload
             this.loader -= 1
             this.payloadLoader -= 1
@@ -407,6 +468,9 @@ export class WidgetFormStore {
             if (this.swapRequired && !this.swapPayload) {
                 throw new Error('swapPayload must be defined')
             }
+            if (!this.rate) {
+                throw new Error('rate must be defined')
+            }
             const browserProvider = new ethers.BrowserProvider(this.evmConnect.provider)
             const signer = await browserProvider.getSigner()
             const multiVault = new ethers.Contract(this.bridgePayload.evmMultivaultAddress, MultiVaultAbi, signer)
@@ -432,14 +496,10 @@ export class WidgetFormStore {
 
             let expectedEversToNativeEvmBN = new BigNumber(this.bridgePayload.evmDepositTokensAmount)
             if (this.swapRequired) {
-                const rate = await bridgeApi.gatePrices.gatePricesCreate({
-                    ticker: this.inputNetwork.currency.symbol,
-                }).then(r => r.json()).then(r => r.price)
-
                 expectedEversToNativeEvmBN = expectedEversToNativeEvmBN.plus(
                     new BigNumber(this.swapPayload!.everAmount)
                         .shiftedBy(-this.tvmConnect.decimals)
-                        .div(rate)
+                        .div(this.rate)
                         .times(1.2)
                         .times(1e18)
                         .dp(0, BigNumber.ROUND_DOWN),
@@ -540,6 +600,13 @@ export class WidgetFormStore {
             : undefined
     }
 
+    get balance(): string | undefined {
+        if (this.isGasToken !== undefined) {
+            return this.isGasToken ? this.walletBalance : this.tokenBalance
+        }
+        return undefined
+    }
+
     get bridgeAmountToReceive(): string | undefined {
         return this.bridgePayloadParams && this.bridgePayload
             ? new BigNumber(this.bridgePayloadParams.evmTokenAmount)
@@ -554,20 +621,49 @@ export class WidgetFormStore {
             : undefined
     }
 
-    get amountEnough(): boolean | undefined {
-        return this.amountNormalized && this.balance
-            ? (new BigNumber(this.amountNormalized).lte(this.balance)
-                && new BigNumber(this.amountNormalized).gt(0))
+    get swapRequired() {
+        return this.bridgeTvmToken && this.outputToken
+            ? this.bridgeTvmToken.address !== this.outputToken.address
             : undefined
     }
 
-    get readyToExchange(): boolean {
-        return !this.loading
-            && this.amountEnough === true
-            && this.wrongNetwork === false
-            && !!this.bridgePayload
+    get amountEnough(): boolean | undefined {
+        if (this.amountNormalized && this.isGasToken !== undefined) {
+            if (this.isGasToken) {
+                if (this.walletBalance) {
+                    return new BigNumber(this.walletBalance).minus(this.amountNormalized).gt(0)
+                }
+            } else {
+                if (this.tokenBalance) {
+                    return new BigNumber(this.tokenBalance).minus(this.amountNormalized).gt(0)
+                }
+            }
+        }
+        return undefined
+    }
+
+    get valueEnough(): boolean | undefined {
+        if (
+            this.rate
+            && this.bridgePayload
             && this.swapRequired !== undefined
             && (this.swapRequired ? !!this.swapPayload : true)
+            && this.walletBalance
+        ) {
+            let value = new BigNumber(this.bridgePayload.evmDepositTokensAmount)
+            if (this.swapRequired) {
+                value = value.plus(
+                    new BigNumber(this.swapPayload!.everAmount)
+                        .shiftedBy(-this.tvmConnect.decimals)
+                        .div(this.rate)
+                        .times(1.2)
+                        .times(1e18)
+                        .dp(0, BigNumber.ROUND_DOWN),
+                )
+            }
+            return new BigNumber(this.walletBalance).minus(value).gte(0)
+        }
+        return undefined
     }
 
     get amountToReceive(): string | undefined {
@@ -589,5 +685,15 @@ export class WidgetFormStore {
             }
         }
         return undefined
+    }
+
+    get readyToExchange(): boolean {
+        return !this.loading
+            && this.amountEnough === true
+            && this.valueEnough === true
+            && this.wrongNetwork === false
+            && !!this.bridgePayload
+            && this.swapRequired !== undefined
+            && (this.swapRequired ? !!this.swapPayload : true)
     }
 }

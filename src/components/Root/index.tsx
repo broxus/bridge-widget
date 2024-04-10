@@ -1,14 +1,14 @@
 import * as React from 'react'
 
+import { Button } from '@/components/Button'
 import { Code } from '@/components/Code'
 import { Input } from '@/components/Input'
 import { useProvider, useStore } from '@/hooks/useStore'
 import { ConstructorStore } from '@/stores/ConstructorStore'
 import { action } from 'mobx'
 import { observer } from 'mobx-react-lite'
-import styles from './index.module.scss'
 import useClipboard from 'react-use-clipboard'
-import { Button } from '@/components/Button'
+import styles from './index.module.scss'
 
 export const Root: React.FC = observer(() => {
     const ConstructorProvider = useProvider(ConstructorStore)
@@ -39,7 +39,7 @@ export const Root: React.FC = observer(() => {
                             value={code}
                         />
                         <Button
-                            size="s"
+                            size='s'
                             onClick={setCopied}
                             className={styles.copy}
                         >

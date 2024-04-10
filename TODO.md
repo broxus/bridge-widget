@@ -1,12 +1,7 @@
 TODO
 
-- Create widget form
-- insufficient funds for gas * price + value: address 0x1906d5F581241928690Cf6A66B7aB9d2367FD901 have 25404381520517849 want 27516613961845045 (supplied gas 25010499)
-- Add token default icon
-- Output token addres in config
 - Show error message
-- Styles
-- Loader in widget.html
+- Connect btn on submit button if not connected
 
 SUCCESS
 
@@ -19,7 +14,13 @@ SUCCESS
 - Add token icon
 - Sync balance
 - Success screen, reset
+- Create widget form
+- Fix insufficient funds for gas * price + value
+- Add token default icon
+- Output token addres in config
+- Loader in widget.html
 
 BACK LOG
 
 - Add token to wallet btn
+- Styles

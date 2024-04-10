@@ -7,10 +7,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/">
     <title>Widget</title>
+    <style>
+        @keyframes rotate {
+            from {
+                transform: rotate(0);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        #root {
+            min-height: 100vh;
+        }
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 24px;
+            height: 24px;
+            margin: -12px 0 0 -12px;
+            animation: rotate 1s linear infinite;
+            color: #eee;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <svg
+            xmlns='http://www.w3.org/2000/svg'
+            viewBox='0 0 22 22'
+            class="loader"
+        >
+            <path
+                d='M11 22C17.0959 22 22 17.0959 22 11C22 7.12134 20.0146 3.72514 17 1.76773L16 3.45543C18.4345 5.04268 20 7.78975 20 11C20 16.0799 16.0799 20 11 20C5.92011 20 2 16.0799 2 11C2 5.92011 5.92011 2 11 2V0C4.90413 0 0 4.90413 0 11C0 17.0959 4.90413 22 11 22Z'
+                fill='currentColor'
+            ></path>
+        </svg>
+    </div>
 </body>
 
 </html>

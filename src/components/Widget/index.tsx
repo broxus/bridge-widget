@@ -18,6 +18,7 @@ import { formattedTokenAmount } from '@broxus/js-utils'
 import { action, runInAction } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import styles from './index.module.scss'
+import { UserAvatar } from '@/components/UserAvatar'
 
 type Props = {
     outputTokenAddress?: string
@@ -217,6 +218,7 @@ export const Widget: React.FC<Props> = observer(({
                                 />
                             </Field>
 
+
                             <Field label='Input token'>
                                 <Select
                                     maxMenuHeight={152}
@@ -227,18 +229,23 @@ export const Widget: React.FC<Props> = observer(({
                                     onChange={e => runInAction(() => form.inputTokenId = e?.value)}
                                     value={inputTokenOptions.find(item => item.value === form.inputTokenId) ?? null}
                                     onCreateOption={onCreateInputToken}
-                                    formatOptionLabel={({ label, value }) => (
-                                        <div className={styles.option}>
-                                            {tokenList.byId[value]?.logoURI && (
-                                                <img src={tokenList.byId[value]?.logoURI} width={18} height={18} />
-                                            )}
-                                            {label}
-                                        </div>
-                                    )}
+                                    formatOptionLabel={({ label, value }) => {
+                                        const token = tokenList.byId[value]
+                                        return (
+                                            <div className={styles.option}>
+                                                {token?.logoURI ? (
+                                                    <img src={token?.logoURI} width={18} height={18} />
+                                                ) : token?.address ? (
+                                                    <UserAvatar address={token.address} size={18} />
+                                                ) : null}
+                                                {label}
+                                            </div>
+                                        )
+                                    }}
                                 />
                             </Field>
 
-                            <Field label='Amount to exchange'>
+                            <Field label='Amount'>
                                 <Input
                                     disabled={!!form.txHash}
                                     placeholder='Enter amount'
@@ -246,7 +253,9 @@ export const Widget: React.FC<Props> = observer(({
                                     onChange={amountField.onChange}
                                     onBlur={amountField.onBlur}
                                     postfix={form.balance && form.inputToken
-                                        ? `Balance: ${formattedTokenAmount(form.balance, form.inputToken.decimals)}`
+                                        ? `Balance: ${
+                                            formattedTokenAmount(form.balance, form.inputToken.decimals)
+                                        }`
                                         : undefined}
                                 />
                             </Field>
@@ -261,14 +270,19 @@ export const Widget: React.FC<Props> = observer(({
                                     onChange={e => runInAction(() => form.outputTokenId = e?.value)}
                                     value={outputTokenOptions.find(item => item.value === form.outputTokenId) ?? null}
                                     onCreateOption={onCreateOutputToken}
-                                    formatOptionLabel={({ label, value }) => (
-                                        <div className={styles.option}>
-                                            {tokenList.byId[value]?.logoURI && (
-                                                <img src={tokenList.byId[value]?.logoURI} width={18} height={18} />
-                                            )}
-                                            {label}
-                                        </div>
-                                    )}
+                                    formatOptionLabel={({ label, value }) => {
+                                        const token = tokenList.byId[value]
+                                        return (
+                                            <div className={styles.option}>
+                                                {token?.logoURI ? (
+                                                    <img src={token?.logoURI} width={18} height={18} />
+                                                ) : token?.address ? (
+                                                    <UserAvatar address={token.address} size={18} />
+                                                ) : null}
+                                                {label}
+                                            </div>
+                                        )
+                                    }}
                                 />
                             </Field>
 
@@ -278,6 +292,7 @@ export const Widget: React.FC<Props> = observer(({
                                     value={form.amountToReceive ? formattedTokenAmount(form.amountToReceive) : ''}
                                 />
                             </Field>
+
 
                             {form.txHash
                                 ? (
@@ -294,7 +309,7 @@ export const Widget: React.FC<Props> = observer(({
                                             ? <Loader />
                                             : form.notEnoughLiquidity
                                             ? 'Not enough liquidity'
-                                            : form.amountEnough === false
+                                            : (form.amountEnough === false || form.valueEnough === false)
                                             ? 'Insufficient balance'
                                             : 'Exchange'}
                                     </Button>
