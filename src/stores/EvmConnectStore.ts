@@ -2,13 +2,12 @@
 import { getNetworkById } from '@/utils/bridge'
 import { lastOfCalls } from '@/utils/last-of-calls'
 import { MetaMaskInpageProvider } from '@metamask/providers'
-import { ethers } from 'ethers'
 import { makeAutoObservable, runInAction } from 'mobx'
-import Web3 from 'web3'
+import Web3, { BlockHeaderOutput } from 'web3'
 
 export class EvmConnectStore {
     provider?: MetaMaskInpageProvider = undefined
-    browserProvider?: ethers.BrowserProvider = undefined
+    web3?: Web3 = undefined
     chainId?: string = undefined
     address?: string = undefined
     balance?: string = undefined
@@ -28,7 +27,6 @@ export class EvmConnectStore {
         let extInstalled = false
         try {
             this.provider?.removeListener('chainChanged', this.syncData)
-            this.provider?.removeListener('chainChanged', this.initBlockListener)
             this.provider?.removeListener('accountsChanged', this.onAccountsChanged)
             this.provider?.removeListener('disconnect', this.disconnect)
 
@@ -36,11 +34,8 @@ export class EvmConnectStore {
             extInstalled = true
 
             this.provider.on('chainChanged', this.syncData)
-            this.provider.on('chainChanged', this.initBlockListener)
             this.provider.on('accountsChanged', this.onAccountsChanged)
             this.provider.on('disconnect', this.disconnect)
-
-            this.initBlockListener()
 
             if (localStorage.getItem('evm_connection')) {
                 await this.connect()
@@ -55,16 +50,9 @@ export class EvmConnectStore {
         })
     }
 
-    initBlockListener() {
-        this.browserProvider?.removeAllListeners()
-        this.browserProvider?.destroy()
-        this.browserProvider = this.provider ? new ethers.BrowserProvider(this.provider) : undefined
-        this.browserProvider?.addListener('block', this.onBlock.call)
-    }
-
-    onBlock = lastOfCalls(async (e: number) => {
+    onBlock = lastOfCalls(async (e: BlockHeaderOutput) => {
         runInAction(() => {
-            this.blockNum = e
+            this.blockNum = Number(e.number)
         })
     }, 500)
 
@@ -103,10 +91,16 @@ export class EvmConnectStore {
 
         if (this.provider) {
             try {
-                const web3 = new Web3(this.provider)
-                const _address = (await web3.eth.getAccounts())[0]
-                const _chainId = (await web3.eth.getChainId()).toString()
-                const _balance = (await web3.eth.getBalance(_address)).toString()
+                await this.web3?.removeAllListeners()
+                this.web3 = new Web3(this.provider)
+                const _address = (await this.web3.eth.getAccounts())[0]
+                const _chainId = (await this.web3.eth.getChainId()).toString()
+                const _balance = (await this.web3.eth.getBalance(_address)).toString()
+
+                const subscriber = await this.web3.eth.subscribe('newBlockHeaders')
+                subscriber.on('data', e => {
+                    this.onBlock.call(e)
+                })
 
                 address = _address
                 chainId = _chainId

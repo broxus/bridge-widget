@@ -3,7 +3,6 @@ TODO
 - Show error message
 - Show connection error message
 - Add hints on submit button
-- Metamask change ntwk sleep
 
 BACK LOG
 
@@ -28,3 +27,4 @@ SUCCESS
 - Loader in widget.html
 - Connect btn on submit button if not connected
 - Styles
+- Metamask change ntwk sleep
