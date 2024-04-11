@@ -94,6 +94,7 @@ export function Select<
                     boxShadow: 'inset 0 0 0 1px #eee',
                     background: '#fff',
                     borderRadius: '4px',
+                    overflow: "hidden",
                 }),
                 menuList: base => ({
                     ...base,
@@ -108,16 +109,12 @@ export function Select<
                     padding: '9px 12px',
                     lineHeight: '20px',
                     wordBreak: 'break-word',
+                    display: "inline-flex",
+                    alignItems: "center",
+                    width: "auto",
+                    borderRadius: "2px",
                     '&:active': {
                         background: state.isSelected ? '#11a97c' : '#eee',
-                    },
-                    '&:first-of-type': {
-                        borderTopLeftRadius: '4px',
-                        borderTopRightRadius: '4px',
-                    },
-                    '&:last-of-type': {
-                        borderBottomLeftRadius: '4px',
-                        borderBottomRightRadius: '4px',
                     },
                 }),
                 noOptionsMessage: (base) => ({
