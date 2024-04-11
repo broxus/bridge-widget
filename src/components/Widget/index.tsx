@@ -307,7 +307,7 @@ export const Widget: React.FC<Props> = observer(({
                                     >
                                         {form.loading
                                             ? <Loader />
-                                            : form.notEnoughLiquidity
+                                            : (form.swapPayload.error || form.bridgePayload.error)
                                             ? 'Not enough liquidity'
                                             : (form.amountEnough === false || form.valueEnough === false)
                                             ? 'Insufficient balance'
