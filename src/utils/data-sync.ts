@@ -8,7 +8,7 @@ export class DataSync<T, A extends any[], G = T, P = A> {
 
     value?: G = undefined
     params?: P = undefined
-    error?: unknown
+    error?: unknown = undefined
 
     constructor(
         protected fn: (...args: A) => Promise<T>,

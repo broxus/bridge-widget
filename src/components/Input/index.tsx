@@ -39,6 +39,7 @@ export const Input: React.FC<Props> = ({
                 focus ? styles.focus : null,
                 invalid ? styles.invalid : null,
                 prefix ? styles.withPrefix : null,
+                disabled ? styles.disabled : null,
                 className,
             )}
         >

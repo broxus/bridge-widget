@@ -5,7 +5,14 @@ import { EvmConnectStore } from '@/stores/EvmConnectStore'
 import { TokenListStore } from '@/stores/TokenListStore'
 import { TvmConnectStore } from '@/stores/TvmConnectStore'
 import { NetworkConfig, Token } from '@/types'
-import { approveTokens, getEvmBalance, getEvmToken, getEvmTokenBalance, getNetworkById } from '@/utils/bridge'
+import {
+    approveTokens,
+    getEvmBalance,
+    getEvmToken,
+    getEvmTokenBalance,
+    getNetworkById,
+    getTokenId,
+} from '@/utils/bridge'
 import { DataSync } from '@/utils/data-sync'
 import { decimalAmount } from '@/utils/decimal-amount'
 import { normalizeAmount } from '@/utils/normalize-amount'
@@ -17,15 +24,15 @@ import { ethers } from 'ethers'
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 
 export class WidgetFormStore {
-    loader = 0
+    protected reactions = new Reactions()
+
     amount?: string = undefined
     inputNetworkId?: string = undefined
     inputTokenId?: string = undefined
     outputTokenId?: string = undefined
     outputAddress?: string = undefined
     txHash?: string | undefined = undefined
-
-    protected reactions = new Reactions()
+    submitLoading = false
 
     evmBalance = new DataSync(getEvmBalance)
     evmTokenBalance = new DataSync(getEvmTokenBalance)
@@ -161,11 +168,12 @@ export class WidgetFormStore {
                     this.bridgeTvmToken.value,
                     this.outputTvmAddress,
                     this.outputToken,
+                    this.swapRequired,
                 ],
                 () => {
                     if (
                         this.bridgeAmountToReceive && this.bridgeEvmToken.value && this.bridgeTvmToken.value
-                        && this.outputTvmAddress && this.outputToken
+                        && this.outputTvmAddress && this.outputToken && this.swapRequired
                     ) {
                         this.swapPayload.sync({
                             input: {
@@ -226,7 +234,7 @@ export class WidgetFormStore {
     async exchange() {
         let txHash: string | undefined
         runInAction(() => {
-            this.loader += 1
+            this.submitLoading = true
         })
         try {
             const { bridgeEvmToken: evmToken } = this
@@ -337,13 +345,15 @@ export class WidgetFormStore {
             console.error(e)
         }
         runInAction(() => {
-            this.loader -= 1
+            this.submitLoading = false
             this.txHash = txHash
         })
     }
 
     get loading(): boolean {
-        return this.loader > 0
+        return this.submitLoading || this.bridgeEvmToken.loading
+            || this.bridgeTvmToken.loading || this.bridgePayload.loading
+            || this.swapPayload.loading
     }
 
     get payloadLoading(): boolean {
@@ -459,16 +469,18 @@ export class WidgetFormStore {
     get amountToReceive(): string | undefined {
         if (this.swapRequired !== undefined) {
             if (this.swapRequired) {
-                const decimals = this.bridgeTvmToken.value?.decimals ?? this.bridgeTvmToken.value?.decimals
-                if (decimals && this.swapPayload.value) {
-                    return decimalAmount(this.swapPayload.value.minTokenAmountReceive, decimals)
+                if (this.swapPayload.params && this.swapPayload.value) {
+                    const tokenId = getTokenId({
+                        chainId: 1,
+                        address: this.swapPayload.params.toCurrencyAddress,
+                    })
+                    if (this.tokenList.byId[tokenId]) {
+                        return decimalAmount(
+                            this.swapPayload.value.minTokenAmountReceive,
+                            this.tokenList.byId[tokenId]!.decimals,
+                        )
+                    }
                 }
-                // if (this.swapPayloadToken && this.swapPayload) {
-                //     return decimalAmount(
-                //         this.swapPayload.minTokenAmountReceive,
-                //         this.swapPayloadToken.decimals,
-                //     )
-                // }
             } else {
                 if (this.bridgeAmountToReceive && this.bridgeEvmToken.value) {
                     return decimalAmount(
@@ -483,6 +495,7 @@ export class WidgetFormStore {
 
     get readyToExchange(): boolean {
         return !this.loading
+            && !this.submitLoading
             && this.amountEnough === true
             && this.valueEnough === true
             && this.wrongNetwork === false
