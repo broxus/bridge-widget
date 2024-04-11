@@ -50,7 +50,7 @@ export class WidgetFormStore {
     constructor(
         protected tokenList: TokenListStore,
         protected evmConnect: EvmConnectStore,
-        protected tvmConnect: TvmConnectStore,
+        public tvmConnect: TvmConnectStore,
     ) {
         makeAutoObservable(this, {}, { autoBind: true })
     }
@@ -290,9 +290,6 @@ export class WidgetFormStore {
     async syncRate() {
         let rate: string | undefined
         this.getRate.skip()
-        runInAction(() => {
-            this.loader += 1
-        })
         try {
             if (this.inputNetwork) {
                 const result = await this.getRate.call({
@@ -301,7 +298,7 @@ export class WidgetFormStore {
                 if (result.skip) {
                     rate = this.rate
                 } else {
-                    rate = (await result.result.json()).price
+                    rate = result.result.data.price
                 }
             }
         } catch (e) {
@@ -309,7 +306,6 @@ export class WidgetFormStore {
         }
         runInAction(() => {
             this.rate = rate
-            this.loader -= 1
         })
     }
 

@@ -95,7 +95,7 @@ export function Select<
                     boxShadow: 'inset 0 0 0 1px #ddd',
                     background: '#fff',
                     borderRadius: '4px',
-                    overflow: "hidden",
+                    overflow: 'hidden',
                 }),
                 menuList: base => ({
                     ...base,
@@ -110,9 +110,9 @@ export function Select<
                     padding: '9px 12px',
                     lineHeight: '20px',
                     wordBreak: 'break-word',
-                    display: "inline-flex",
-                    alignItems: "center",
-                    width: "auto",
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    width: 'auto',
                     '&:active': {
                         background: state.isSelected ? '#11a97c' : '#ddd',
                     },

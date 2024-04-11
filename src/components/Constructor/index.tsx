@@ -20,7 +20,6 @@ export const Constructor: React.FC = observer(() => {
     return (
         <ConstructorProvider value={constructor}>
             <div className={styles.root}>
-
                 <div className={styles.container}>
                     <div className={styles.section}>
                         <h1 className={styles.title}>

@@ -39,6 +39,7 @@
         "@broxus/js-core": "^0.12.1",
         "@broxus/js-utils": "^1.3.5",
         "@metamask/providers": "^16.0.0",
+        "axios": "^1.6.8",
         "bignumber.js": "^9.1.2",
         "classnames": "^2.5.1",
         "ethers": "^6.11.1",

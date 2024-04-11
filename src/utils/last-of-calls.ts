@@ -6,10 +6,16 @@ export type Result<T> = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function lastOfCalls<A extends any[], T = unknown>(fn: (...args: A) => Promise<T>, delay?: number): {
+export type WrappedFn<A extends any[], T = unknown> = {
     skip: () => void
     call: (...args: A) => Promise<Result<T>>
-} {
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function lastOfCalls<A extends any[], T = unknown>(
+    fn: (...args: A) => Promise<T>,
+    delay?: number,
+): WrappedFn<A, T> {
     let requestId = 0
     return {
         skip: () => {

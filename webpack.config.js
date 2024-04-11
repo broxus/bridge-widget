@@ -86,20 +86,22 @@ export default (env, argv) => {
                 template: './src/index.html',
                 minify: true,
                 filename: 'index.html',
-                chunks: ['main']
+                chunks: ['main'],
             }),
             new HtmlWebpackPlugin({
                 template: './src/index.html',
                 minify: true,
                 filename: 'widget.html',
-                chunks: ['widget']
+                chunks: ['widget'],
             }),
-            ...(isProduction ? [
-                new MiniCssExtractPlugin({
-                    filename: '[name]-[contenthash:6].css',
-                    ignoreOrder: true,
-                }),
-            ] : []),
+            ...(isProduction
+                ? [
+                    new MiniCssExtractPlugin({
+                        filename: '[name]-[contenthash:6].css',
+                        ignoreOrder: true,
+                    }),
+                ]
+                : []),
         ],
 
         devtool: 'source-map',
