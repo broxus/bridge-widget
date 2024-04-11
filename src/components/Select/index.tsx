@@ -47,7 +47,7 @@ export function Select<
                     background: '#fff',
                     borderWidth: 0,
                     borderRadius: '4px',
-                    boxShadow: state.isFocused ? '0 0 0 2px #11a97c' : 'inset 0 0 0 1px #eee',
+                    boxShadow: state.isFocused ? '0 0 0 2px #11a97c' : 'inset 0 0 0 1px #ddd',
                     cursor: state.isDisabled ? 'default' : 'pointer',
                     opacity: state.isDisabled ? 0.4 : 1,
                     '&:hover': {
@@ -92,7 +92,7 @@ export function Select<
                 }),
                 menu: base => ({
                     ...base,
-                    boxShadow: 'inset 0 0 0 1px #eee',
+                    boxShadow: 'inset 0 0 0 1px #ddd',
                     background: '#fff',
                     borderRadius: '4px',
                     overflow: "hidden",
@@ -104,7 +104,7 @@ export function Select<
                 }),
                 option: (base, state) => ({
                     ...base,
-                    background: state.isSelected ? '#11a97c' : state.isFocused ? '#eee' : 'transparent',
+                    background: state.isSelected ? '#11a97c' : state.isFocused ? '#ddd' : 'transparent',
                     fontSize: '14px',
                     fontWeight: 400,
                     padding: '9px 12px',
@@ -113,9 +113,8 @@ export function Select<
                     display: "inline-flex",
                     alignItems: "center",
                     width: "auto",
-                    borderRadius: "2px",
                     '&:active': {
-                        background: state.isSelected ? '#11a97c' : '#eee',
+                        background: state.isSelected ? '#11a97c' : '#ddd',
                     },
                 }),
                 noOptionsMessage: (base) => ({
