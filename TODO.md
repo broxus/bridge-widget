@@ -3,6 +3,7 @@ TODO
 - Show error message
 - Show connection error message
 - Add hints on submit button
+- Metamask change ntwk sleep
 
 BACK LOG
 

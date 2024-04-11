@@ -9,6 +9,7 @@ export function Select<
     GroupType extends GroupBase<OptionType> = GroupBase<OptionType>,
 >(props: CreatableProps<OptionType, IsMulti, GroupType>): JSX.Element {
     const SelectElement = props.onCreateOption ? ReactSelectCreatable : ReactSelect
+
     return (
         <SelectElement
             {...props}
