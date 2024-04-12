@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import { Button } from '@/components/Button'
+import { ErrorScreen } from '@/components/ErrorScreen'
 import { Field } from '@/components/Field'
 import { Input } from '@/components/Input'
 import { Loader } from '@/components/Loader'
@@ -198,7 +199,7 @@ export const Widget: React.FC<Props> = observer(({
                             <Field label='Input blockchain'>
                                 <Select
                                     placeholder='Select blockchain'
-                                    maxMenuHeight={190}
+                                    maxMenuHeight={106}
                                     isLoading={!tokenList.ready}
                                     isDisabled={!tokenList.ready || !!form.txHash || form.submitLoading}
                                     options={networkOptions}
@@ -215,7 +216,7 @@ export const Widget: React.FC<Props> = observer(({
 
                             <Field label='Input token'>
                                 <Select
-                                    maxMenuHeight={190}
+                                    maxMenuHeight={106}
                                     placeholder={`Select or enter ${form.inputNetwork?.shortName ?? 'EVM'} address`}
                                     isLoading={!tokenList.ready || inputTokenLoading}
                                     isDisabled={!tokenList.ready || !!form.txHash || form.submitLoading}
@@ -254,10 +255,10 @@ export const Widget: React.FC<Props> = observer(({
 
                             <Field label='Output token'>
                                 <Select
-                                    maxMenuHeight={114}
+                                    maxMenuHeight={106}
                                     placeholder='Select or enter Venom address'
                                     isLoading={!tokenList.ready || outputTokenLoading}
-                                    isDisabled={!tokenList.ready || !!form.txHash  || form.submitLoading}
+                                    isDisabled={!tokenList.ready || !!form.txHash || form.submitLoading}
                                     options={outputTokenOptions}
                                     onChange={e => runInAction(() => form.outputTokenId = e?.value)}
                                     value={outputTokenOptions.find(item => item.value === form.outputTokenId) ?? null}
@@ -281,7 +282,7 @@ export const Widget: React.FC<Props> = observer(({
                             <Field label='Minimum receive'>
                                 <Input
                                     readOnly
-                                    disabled={!!form.txHash  || form.submitLoading}
+                                    disabled={!!form.txHash || form.submitLoading}
                                     value={form.amountToReceive ? formattedTokenAmount(form.amountToReceive) : ''}
                                 />
                             </Field>
@@ -317,7 +318,9 @@ export const Widget: React.FC<Props> = observer(({
                                             : 'Exchange'}
                                     </Button>
                                 )}
+
                             <SuccessScreen />
+                            <ErrorScreen />
                         </form>
                     </EvmConnectProvider>
                 </TvmConnectProvider>

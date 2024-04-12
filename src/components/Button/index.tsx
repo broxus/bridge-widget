@@ -5,6 +5,7 @@ import styles from './index.module.scss'
 
 type Props = {
     onClick?: () => void
+    block?: boolean
     disabled?: boolean
     className?: string
     size?: 's' | 'm'
@@ -22,6 +23,7 @@ export const Button: React.FC<Props> = ({
     submit,
     href,
     width,
+    block,
 }) => {
     if (href) {
         return (
@@ -30,7 +32,7 @@ export const Button: React.FC<Props> = ({
                 onClick={onClick}
                 target='_blank'
                 rel='noopener noreferrer'
-                className={classNames(styles.btn, className, styles[size])}
+                className={classNames(styles.btn, className, styles[size], block ? styles.block : undefined)}
                 style={{
                     minWidth: width !== undefined ? `${width}px` : undefined,
                 }}
@@ -44,7 +46,7 @@ export const Button: React.FC<Props> = ({
             type={submit ? 'submit' : 'button'}
             onClick={onClick}
             disabled={disabled}
-            className={classNames(styles.btn, className, styles[size])}
+            className={classNames(styles.btn, className, styles[size], block ? styles.block : undefined)}
             style={{
                 minWidth: width !== undefined ? `${width}px` : undefined,
             }}

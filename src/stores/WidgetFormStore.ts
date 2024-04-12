@@ -31,7 +31,8 @@ export class WidgetFormStore {
     inputTokenId?: string = undefined
     outputTokenId?: string = undefined
     outputAddress?: string = undefined
-    txHash?: string | undefined = undefined
+    txHash?: string = undefined
+    error?: string = undefined
     submitLoading = false
 
     evmBalance = new DataSync(getEvmBalance)
@@ -222,6 +223,7 @@ export class WidgetFormStore {
         this.outputTokenId = undefined
         this.outputAddress = undefined
         this.txHash = undefined
+        this.error = undefined
         this.evmBalance.reset()
         this.evmTokenBalance.reset()
         this.bridgeEvmToken.reset()
@@ -233,6 +235,7 @@ export class WidgetFormStore {
 
     async exchange() {
         let txHash: string | undefined
+        let error: string | undefined
         runInAction(() => {
             this.submitLoading = true
         })
@@ -341,12 +344,17 @@ export class WidgetFormStore {
                 await trx.wait()
                 txHash = trx.hash
             }
-        } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (e: any) {
             console.error(e)
+            if (e && e.code !== 'ACTION_REJECTED') {
+                error = e.stack ?? 'Unknown error'
+            }
         }
         runInAction(() => {
             this.submitLoading = false
             this.txHash = txHash
+            this.error = error
         })
     }
 

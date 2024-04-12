@@ -1,12 +1,12 @@
 import * as React from 'react'
 
-import { Button } from '@/components/Button'
+import { MessageScreen } from '@/components/MessageScreen'
 import { useStoreContext } from '@/hooks/useStore'
 import { WidgetFormStore } from '@/stores/WidgetFormStore'
 import { getTxLink } from '@/utils/bridge'
 import { sliceAddress } from '@broxus/js-utils'
 import { observer } from 'mobx-react-lite'
-import styles from './index.module.scss'
+import { Button } from '@/components/Button'
 
 export const SuccessScreen: React.FC = observer(() => {
     const form = useStoreContext(WidgetFormStore)
@@ -18,16 +18,11 @@ export const SuccessScreen: React.FC = observer(() => {
 
     return visible && form.txHash && form.inputNetwork
         ? (
-            <div className={styles.root}>
-                <div
-                    className={styles.overlay}
-                    onClick={() => setVisible(false)}
-                />
-                <div className={styles.success}>
-                    <div className={styles.title}>
-                        Transaction successful
-                    </div>
-                    <div className={styles.link}>
+            <MessageScreen
+                onClose={() => setVisible(false)}
+                title='Transaction successful'
+                message={
+                    <>
                         <a
                             href={getTxLink(form.inputNetwork, form.txHash)}
                             target='_blank'
@@ -35,17 +30,12 @@ export const SuccessScreen: React.FC = observer(() => {
                         >
                             {sliceAddress(form.txHash)}
                         </a>
-                    </div>
-                    <div className={styles.btn}>
-                        <Button
-                            width={150}
-                            onClick={form.reset}
-                        >
+                        <Button block onClick={form.reset}>
                             New transfer
                         </Button>
-                    </div>
-                </div>
-            </div>
+                    </>
+                }
+            />
         )
         : null
 })

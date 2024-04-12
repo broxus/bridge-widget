@@ -49,9 +49,9 @@ export class DataSync<T, A extends any[], G = T, P = A> {
     }
 
     reset() {
-        this.wrappedFn.skip()
         this.params = undefined
         this.value = undefined
+        this.wrappedFn.skip()
     }
 
     get loading() {

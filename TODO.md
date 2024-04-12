@@ -1,11 +1,6 @@
-TODO
-
-- Show error message
-- Show connection error message
-- Add hints on submit button
-
 BACK LOG
 
+- Add hints on submit button
 - Add token to wallet btn
 - Configurable styles
 
