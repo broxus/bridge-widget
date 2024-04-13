@@ -89,7 +89,7 @@ export default (env, argv) => {
                 chunks: ['main'],
             }),
             new HtmlWebpackPlugin({
-                template: './src/index.html',
+                template: './src/widget.html',
                 minify: true,
                 filename: 'widget.html',
                 chunks: ['widget'],

@@ -16,7 +16,7 @@ export function Select<
             components={{
                 ...props.components,
                 IndicatorSeparator: null,
-                DropdownIndicator: ({ isFocused, innerProps }) => (
+                DropdownIndicator: ({ innerProps, isDisabled }) => (
                     <div
                         {...innerProps}
                         style={{ paddingRight: '12px' }}
@@ -30,26 +30,25 @@ export function Select<
                         >
                             <path
                                 d='M2 4.5L6 8.5L10 4.5'
-                                stroke={isFocused ? '#11a97c' : '#999'}
+                                stroke={isDisabled ? '#CBDEF433' :'#CBDEF4'}
                                 strokeLinejoin='round'
                                 strokeLinecap='round'
                             />
                         </svg>
                     </div>
                 ),
-                LoadingIndicator: () => <Loader size={16} />,
+                LoadingIndicator: () => <Loader size={16} color='#CBDEF433' />,
             }}
             styles={{
                 control: (base, state) => ({
                     ...base,
                     minHeight: '36px',
                     height: '36px',
-                    background: '#fff',
+                    background: state.isDisabled ? '#3E8CCA1F' : '#3E8CCA33',
                     borderWidth: 0,
                     borderRadius: '4px',
-                    boxShadow: state.isFocused ? '0 0 0 2px #11a97c' : 'inset 0 0 0 1px #ddd',
+                    boxShadow: state.isFocused ? '0 0 0 1px #CBDEF4' : 'none',
                     cursor: state.isDisabled ? 'default' : 'pointer',
-                    opacity: state.isDisabled ? 0.4 : 1,
                     '&:hover': {
                         borderColor: undefined,
                     },
@@ -60,17 +59,17 @@ export function Select<
                     paddingLeft: '12px',
                     paddingRight: '12px',
                 }),
-                singleValue: base => ({
+                singleValue: (base, state) => ({
                     ...base,
                     margin: 0,
                     fontSize: '14px',
-                    color: '#000',
+                    color: state.isDisabled ? '#CBDEF433' : '#CBDEF4',
                     fontWeight: 400,
                 }),
-                input: provided => ({
+                input: (provided, state) => ({
                     ...provided,
                     margin: '0px',
-                    color: '#000',
+                    color: state.isDisabled ? '#CBDEF433' : '#CBDEF4',
                     fontSize: '14px',
                     fontWeight: 400,
                 }),
@@ -84,7 +83,7 @@ export function Select<
                 }),
                 placeholder: base => ({
                     ...base,
-                    color: '#999',
+                    color: '#CBDEF433',
                     fontSize: '14px',
                     fontWeight: 400,
                     marginLeft: 0,
@@ -92,8 +91,8 @@ export function Select<
                 }),
                 menu: base => ({
                     ...base,
-                    boxShadow: 'inset 0 0 0 1px #ddd',
-                    background: '#fff',
+                    boxShadow: '2px 2px 10px rgba(0,0,0,0.2)',
+                    background: '#153e5f',
                     borderRadius: '4px',
                     overflow: 'hidden',
                 }),
@@ -108,7 +107,7 @@ export function Select<
                 }),
                 option: (base, state) => ({
                     ...base,
-                    background: state.isSelected ? '#11a97c' : state.isFocused ? '#ddd' : 'transparent',
+                    background: state.isSelected ? '#FFFFFF' : state.isFocused ? '#3E8CCA33' : 'transparent',
                     fontSize: '14px',
                     fontWeight: 400,
                     padding: '6px 12px',
@@ -118,13 +117,16 @@ export function Select<
                     alignItems: 'center',
                     width: 'auto',
                     borderRadius: '4px',
+                    color: state.isSelected ? '#051C2E' : '#CBDEF4',
                     '&:active': {
-                        background: state.isSelected ? '#11a97c' : '#ddd',
+                        background: '#FFFFFF',
+                        color: '#051C2E',
                     },
                 }),
                 noOptionsMessage: (base) => ({
                     ...base,
                     fontSize: '14px',
+                    color: '#CBDEF4',
                 }),
             }}
         />

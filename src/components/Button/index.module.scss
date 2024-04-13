@@ -8,23 +8,25 @@
     border-radius: 4px;
     cursor: pointer;
     transition: 0.2s ease;
-    background: #eee;
+    background: #3E8CCA33;
     outline: none;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: inherit;
+    color: #CBDEF4;
+    white-space: nowrap;
 
     &:hover:not(&:disabled),
     &:focus:not(&:disabled) {
-        background: #ddd;
+        background: #3E8CCA1F;
     }
 
     &:disabled {
         cursor: default;
-        color: rgba(0,0,0,0.3);
+        color: #CBDEF433;
+        background: #3E8CCA1F;
     }
 
     &.block {
