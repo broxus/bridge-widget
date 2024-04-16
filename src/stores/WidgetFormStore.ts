@@ -1,5 +1,6 @@
 import { bridgeApi } from '@/api/bridge'
-import { dexApi } from '@/api/dex'
+import { dexApiV1 } from '@/api/dex-v1'
+import { dexApiV2 } from '@/api/dex-v2'
 import { WHITE_LIST_CURRENCIES } from '@/config'
 import { EvmConnectStore } from '@/stores/EvmConnectStore'
 import { TokenListStore } from '@/stores/TokenListStore'
@@ -52,9 +53,12 @@ export class WidgetFormStore {
         value => value.data.price,
     )
     swapPayload = new DataSync(
-        dexApi.middleware.middlewareCreate.bind(dexApi),
+        dexApiV2.middleware.middlewareCreate.bind(dexApiV2),
         value => 'swap' in value.data.output ? value.data.output.swap : undefined,
         params => 'swap' in params[0].input ? params[0].input.swap : undefined,
+    )
+    tvmTokenPrice = new DataSync(
+        dexApiV1.currenciesUsdtPrices.currenciesUsdtPricesCreate.bind(dexApiV1)
     )
 
     constructor(
@@ -68,9 +72,34 @@ export class WidgetFormStore {
     init() {
         this.reactions.create(
             reaction(
+                () => this.outputToken,
+                () => {
+                    if (this.outputToken) {
+                        this.tvmTokenPrice.sync({
+                            currency_addresses: [this.outputToken.address],
+                        })
+                    } else {
+                        this.tvmTokenPrice.reset()
+                    }
+                },
+                {
+                    fireImmediately: true
+                }
+            ),
+            reaction(
                 () => this.inputNetworkId,
                 () => {
                     this.inputTokenId = undefined
+                    this.evmTokenBalance.reset()
+                },
+            ),
+            reaction(
+                () => this.inputTokenId,
+                () => {
+                    this.bridgeEvmToken.reset()
+                    this.bridgeTvmToken.reset()
+                    this.bridgePayload.reset()
+                    this.swapPayload.reset()
                     this.evmTokenBalance.reset()
                 },
             ),
@@ -501,6 +530,24 @@ export class WidgetFormStore {
         return undefined
     }
 
+    get amountToReceiveUsdt(): string | undefined {
+        if (this.amountToReceive && this.tvmTokenPrice.value && this.tvmTokenPrice.params) {
+            const address = this.tvmTokenPrice.params[0].currency_addresses.at(0)
+            const price = address ? this.tvmTokenPrice.value.data[address] : undefined
+            if (price) {
+                return new BigNumber(price).times(this.amountToReceive).toFixed()
+            }
+        }
+        return undefined
+    }
+
+    get minAmountValid(): boolean | undefined {
+        if (this.amountToReceiveUsdt) {
+            return new BigNumber(this.amountToReceiveUsdt).gte(5)
+        }
+        return undefined
+    }
+
     get readyToExchange(): boolean {
         return !this.loading
             && !this.submitLoading
@@ -510,5 +557,6 @@ export class WidgetFormStore {
             && !!this.bridgePayload.value
             && this.swapRequired !== undefined
             && (this.swapRequired ? !!this.swapPayload.value : true)
+            && !!this.minAmountValid
     }
 }

@@ -30,7 +30,7 @@ export function Select<
                         >
                             <path
                                 d='M2 4.5L6 8.5L10 4.5'
-                                stroke={isDisabled ? '#CBDEF433' :'#CBDEF4'}
+                                stroke={isDisabled ? '#CBDEF433' : '#CBDEF4'}
                                 strokeLinejoin='round'
                                 strokeLinecap='round'
                             />

@@ -284,6 +284,9 @@ export const Widget: React.FC<Props> = observer(({
                                     readOnly
                                     disabled={!!form.txHash || form.submitLoading}
                                     value={form.amountToReceive ? formattedTokenAmount(form.amountToReceive) : ''}
+                                    postfix={form.amountToReceiveUsdt
+                                        ? `$${formattedTokenAmount(form.amountToReceiveUsdt)}`
+                                        : undefined}
                                 />
                             </Field>
 
@@ -315,6 +318,8 @@ export const Widget: React.FC<Props> = observer(({
                                             ? 'Insufficient balance'
                                             : form.wrongOutputAddress
                                             ? 'Invalid venom address'
+                                            : form.minAmountValid === false
+                                            ? 'Min receive must be more than $5'
                                             : 'Exchange'}
                                     </Button>
                                 )}

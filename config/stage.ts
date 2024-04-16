@@ -4,7 +4,9 @@ import { NetworkConfig } from '@/types'
 
 export const BridgeApiBaseUrl = 'https://api.venombridge.com/v1'
 
-export const DexApiBaseUrl = 'https://api.web3.world/v2'
+export const DexApiV2BaseUrl = 'https://api.web3.world/v2'
+
+export const DexApiV1BaseUrl = 'https://api.web3.world/v1'
 
 export const TokenListURI = 'https://cdn.venom.foundation/assets/mainnet/manifest.json'
 

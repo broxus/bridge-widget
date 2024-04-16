@@ -1,12 +1,12 @@
 import * as React from 'react'
 
+import { Button } from '@/components/Button'
 import { MessageScreen } from '@/components/MessageScreen'
 import { useStoreContext } from '@/hooks/useStore'
 import { WidgetFormStore } from '@/stores/WidgetFormStore'
 import { getBridgeLink } from '@/utils/bridge'
 import { sliceAddress } from '@broxus/js-utils'
 import { observer } from 'mobx-react-lite'
-import { Button } from '@/components/Button'
 
 export const SuccessScreen: React.FC = observer(() => {
     const form = useStoreContext(WidgetFormStore)
