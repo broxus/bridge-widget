@@ -3,7 +3,7 @@ import { isTvmAddress, TvmTokenUtils } from '@broxus/js-core'
 import Web3 from 'web3'
 
 import { ERC20Abi } from '@/abi/ERC20'
-import { networks } from '@/config'
+import { BridgeBaseUrl, networks } from '@/config'
 import { NetworkConfig, Token } from '@/types'
 import { delay } from '@/utils/delay'
 import { isEvmAddress } from '@/utils/is-evm-address'
@@ -30,6 +30,10 @@ export const getNetworkById = (id: string): NetworkConfig => {
 
 export const getTxLink = (network: NetworkConfig, txHash: string) => (
     `${network.explorer.baseUrl}/${network.explorer.transactionsSubPath}/${txHash}`
+)
+
+export const getBridgeLink = (network: NetworkConfig, txHash: string) => (
+    `${BridgeBaseUrl}/transfer/${network.id}/tvm-1/${txHash}`
 )
 
 export const getTokenType = (token: { address: string }): 'tvm' | 'evm' | 'unknown' => {

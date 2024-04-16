@@ -34,7 +34,8 @@ export class TokenListStore {
 
     async fetch(): Promise<void> {
         try {
-            const [tvmTokens, evmTokens] = await Promise.all([
+            // eslint-disable-next-line prefer-const
+            let [tvmTokens, evmTokens] = await Promise.all([
                 fetch(TokenListURI)
                     .then(data => data.json())
                     .then(data => data.tokens as Token[]),
@@ -43,14 +44,31 @@ export class TokenListStore {
                     .then(data => data.tokens as Token[]),
             ])
 
-            const entries = [...tvmTokens, ...evmTokens, ...currencies.tokens]
+            evmTokens = evmTokens.filter(item => {
+                if (item.chainId.toString() === '1') {
+                    return true
+                }
+                if (['usdt', 'usdc', 'wbtc', 'weth', 'dai'].includes(item.symbol.toLowerCase())) {
+                    return true
+                }
+                return false
+            })
+
+            const gasTokens = currencies.tokens.filter(item => {
+                if (['avax', 'matic'].includes(item.symbol.toLowerCase())) {
+                    return false
+                }
+                return true
+            })
+
+            const entries = [...tvmTokens, ...evmTokens, ...gasTokens]
                 .map(item => [getTokenId(item), item] as const)
 
             const unique = Object.values(Object.fromEntries(entries))
 
             runInAction(() => {
                 this.tokens = unique
-                this.gasTokens = currencies.tokens
+                this.gasTokens = gasTokens
                 this.ready = true
             })
         } catch (e) {

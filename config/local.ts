@@ -18,6 +18,8 @@ export const WVENOMVaultRootAddress = new AddressLiteral(
 
 export const IFRAME_BASE_URL = 'http://localhost:3000/widget.html'
 
+export const BridgeBaseUrl = 'https://venombridge.com'
+
 export const networks: NetworkConfig[] = [
     {
         chainId: '1',
@@ -84,29 +86,6 @@ export const networks: NetworkConfig[] = [
         name: 'Binance Smart Chain',
         rpcUrl: 'https://bsc-dataseed.binance.org/',
         shortName: 'BSC',
-        transactionType: '0x0',
-        type: 'evm',
-    },
-    {
-        chainId: '250',
-        currency: {
-            decimals: 18,
-            icon: 'https://cdn.venom.foundation/assets/mainnet/icons/FTM/logo.svg',
-            name: 'Native currency',
-            symbol: 'FTM',
-            wrappedCurrencyAddress: '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',
-        },
-        explorer: {
-            accountsSubPath: 'address',
-            baseUrl: 'https://ftmscan.com',
-            title: 'FTMScan',
-            transactionsSubPath: 'tx',
-        },
-        icon: 'https://cdn.venom.foundation/assets/mainnet/icons/FTM/logo.svg',
-        id: 'evm-250',
-        name: 'Fantom Opera',
-        rpcUrl: 'https://rpcapi.fantom.network',
-        shortName: 'Fantom Opera',
         transactionType: '0x0',
         type: 'evm',
     },
