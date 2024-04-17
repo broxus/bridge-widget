@@ -57,7 +57,7 @@ export class WidgetFormStore {
         value => 'swap' in value.data.output ? value.data.output.swap : undefined,
         params => 'swap' in params[0].input ? params[0].input.swap : undefined,
     )
-    tvmTokenPrice = new DataSync(
+    bridgeTokenPrice = new DataSync(
         dexApiV1.currenciesUsdtPrices.currenciesUsdtPricesCreate.bind(dexApiV1),
     )
 
@@ -73,14 +73,21 @@ export class WidgetFormStore {
         this.reactions.create(
             reaction(
                 () => this.outputToken,
+                () => this.swapPayload.reset(),
+                {
+                    fireImmediately: true,
+                },
+            ),
+            reaction(
+                () => this.bridgeTvmToken.value,
                 () => {
-                    this.swapPayload.reset()
-                    if (this.outputToken) {
-                        this.tvmTokenPrice.sync({
-                            currency_addresses: [this.outputToken.address],
+                    console.log(this.bridgeTvmToken.value)
+                    if (this.bridgeTvmToken.value) {
+                        this.bridgeTokenPrice.sync({
+                            currency_addresses: [this.bridgeTvmToken.value.tokenAddress],
                         })
                     } else {
-                        this.tvmTokenPrice.reset()
+                        this.bridgeTokenPrice.reset()
                     }
                 },
                 {
@@ -531,24 +538,13 @@ export class WidgetFormStore {
         return undefined
     }
 
-    get amountToReceiveUsdt(): string | undefined {
-        if (this.amountToReceive && this.tvmTokenPrice.value && this.tvmTokenPrice.params) {
-            const address = this.tvmTokenPrice.params[0].currency_addresses.at(0)
-            const price = address ? this.tvmTokenPrice.value.data[address] : undefined
-            if (price) {
-                return new BigNumber(price).times(this.amountToReceive).toFixed()
-            }
-        }
-        return undefined
-    }
-
     get minAmount(): string | undefined {
-        if (this.amountToReceiveUsdt && this.bridgePayload.params) {
-            const inputAmount = decimalAmount(
-                this.bridgePayload.params.evmTokenAmount,
-                this.bridgePayload.params.evmTokenDecimals,
-            )
-            return new BigNumber(5).times(inputAmount).dividedBy(this.amountToReceiveUsdt).toFixed()
+        if (this.bridgeTokenPrice.value) {
+            const address = this.bridgeTokenPrice.params?.[0].currency_addresses.at(0)
+            if (address) {
+                const price = this.bridgeTokenPrice.value.data[address]
+                return new BigNumber(5).dividedBy(price).toFixed()
+            }
         }
         return undefined
     }

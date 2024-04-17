@@ -285,9 +285,6 @@ export const Widget: React.FC<Props> = observer(({
                                     readOnly
                                     disabled={!!form.txHash || form.submitLoading}
                                     value={form.amountToReceive ? formattedTokenAmount(form.amountToReceive) : ''}
-                                    postfix={form.amountToReceiveUsdt
-                                        ? `$${formattedTokenAmount(form.amountToReceiveUsdt)}`
-                                        : undefined}
                                 />
                             </Field>
 
