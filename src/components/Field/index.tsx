@@ -3,7 +3,7 @@ import * as React from 'react'
 import styles from './index.module.scss'
 
 type Props = {
-    label?: string
+    label?: React.ReactNode
     error?: string
 } & React.PropsWithChildren
 

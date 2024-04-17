@@ -14,7 +14,7 @@ export const Constructor: React.FC = observer(() => {
     const ConstructorProvider = useProvider(ConstructorStore)
     const constructor = useStore(ConstructorStore)
 
-    const code = `<iframe src="${constructor.iframeURL}" style="border: 0px; height: 563px; width: 420px;"></iframe>`
+    const code = `<iframe src="${constructor.iframeURL}" style="border: 0px; height: 581px; width: 420px;"></iframe>`
     const [isCopied, setCopied] = useClipboard(code, { successDuration: 1000 })
 
     return (
@@ -56,7 +56,7 @@ export const Constructor: React.FC = observer(() => {
                             src={constructor.iframeURL}
                             style={{
                                 border: 0,
-                                height: 563,
+                                height: 581,
                             }}
                         />
                     </div>

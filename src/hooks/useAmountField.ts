@@ -26,6 +26,14 @@ export function useAmountField({ decimals, defaultValue, max, min, ...props }: P
             const validatedAmount = truncateDecimals(value, decimals)
             value = validatedAmount != null ? validatedAmount : ''
         }
+        const bn = value ? new BigNumber(value) : undefined
+
+        if (bn && max && bn.gt(max)) {
+            value = max
+        }
+        if (bn && min && bn.lt(min)) {
+            value = min
+        }
 
         props.onBlur?.(value)
     }
@@ -39,15 +47,6 @@ export function useAmountField({ decimals, defaultValue, max, min, ...props }: P
             value = value.replace(/[,]/g, '.')
             value = value.replace(/[.]+/g, '.')
             value = value.replace(/(?!- )[^0-9.]/g, '')
-        }
-
-        const bn = value ? new BigNumber(value) : undefined
-
-        if (bn && max && bn.gt(max)) {
-            value = max
-        }
-        if (bn && min && bn.lt(min)) {
-            value = min
         }
 
         props.onChange?.(value)

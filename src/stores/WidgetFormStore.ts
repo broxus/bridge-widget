@@ -35,6 +35,21 @@ export class WidgetFormStore {
     txHash?: string = undefined
     error?: string = undefined
     submitLoading = false
+    slippage: string = (() => {
+        let slippage = '15'
+        try {
+            const saved = localStorage.getItem('slippage')
+            if (saved) {
+                const int = parseInt(saved, 10)
+                if (int && int > 0 && isFinite(int)) {
+                    slippage = int.toString()
+                }
+            }
+        } catch (e) {
+            console.error(e)
+        }
+        return slippage
+    })()
 
     evmBalance = new DataSync(getEvmBalance)
     evmTokenBalance = new DataSync(getEvmTokenBalance)
@@ -71,6 +86,16 @@ export class WidgetFormStore {
 
     init() {
         this.reactions.create(
+            reaction(
+                () => this.slippage,
+                () => {
+                    try {
+                        localStorage.setItem('slippage', this.slippage)
+                    } catch (e) {
+                        console.error(e)
+                    }
+                },
+            ),
             reaction(
                 () => this.outputToken,
                 () => this.swapPayload.reset(),
@@ -237,7 +262,7 @@ export class WidgetFormStore {
                                     toCurrencyAddress: this.outputToken.address,
                                     whiteListCurrencies: WHITE_LIST_CURRENCIES,
                                     direction: 'expectedexchange',
-                                    slippage: '0.05',
+                                    slippage: new BigNumber(this.slippage).dividedBy(100).toFixed(),
                                 },
                             },
                         })
@@ -511,7 +536,7 @@ export class WidgetFormStore {
         return undefined
     }
 
-    get amountToReceive(): string | undefined {
+    get amountToReceive(): { min: string; max: string } | undefined {
         if (this.swapRequired !== undefined) {
             if (this.swapRequired) {
                 if (this.swapPayload.params && this.swapPayload.value) {
@@ -520,18 +545,30 @@ export class WidgetFormStore {
                         address: this.swapPayload.params.toCurrencyAddress,
                     })
                     if (this.tokenList.byId[tokenId]) {
-                        return decimalAmount(
-                            this.swapPayload.value.minTokenAmountReceive,
-                            this.tokenList.byId[tokenId]!.decimals,
-                        )
+                        return {
+                            min: decimalAmount(
+                                this.swapPayload.value.minTokenAmountReceive,
+                                this.tokenList.byId[tokenId]!.decimals,
+                            ),
+                            max: decimalAmount(
+                                this.swapPayload.value.tokenAmountReceive,
+                                this.tokenList.byId[tokenId]!.decimals,
+                            ),
+                        }
                     }
                 }
             } else {
                 if (this.bridgeAmountToReceive && this.bridgePayload.params) {
-                    return decimalAmount(
-                        this.bridgeAmountToReceive,
-                        this.bridgePayload.params?.evmTokenDecimals,
-                    )
+                    return {
+                        min: decimalAmount(
+                            this.bridgeAmountToReceive,
+                            this.bridgePayload.params?.evmTokenDecimals,
+                        ),
+                        max: decimalAmount(
+                            this.bridgeAmountToReceive,
+                            this.bridgePayload.params?.evmTokenDecimals,
+                        ),
+                    }
                 }
             }
         }

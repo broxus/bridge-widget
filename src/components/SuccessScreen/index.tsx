@@ -8,6 +8,8 @@ import { getBridgeLink } from '@/utils/bridge'
 import { sliceAddress } from '@broxus/js-utils'
 import { observer } from 'mobx-react-lite'
 
+import styles from './index.module.scss'
+
 export const SuccessScreen: React.FC = observer(() => {
     const form = useStoreContext(WidgetFormStore)
     const [visible, setVisible] = React.useState(false)
@@ -20,16 +22,24 @@ export const SuccessScreen: React.FC = observer(() => {
         ? (
             <MessageScreen
                 onClose={() => setVisible(false)}
-                title='Transaction successful'
+                title='Transaction sent'
                 message={
                     <>
-                        <a
-                            href={getBridgeLink(form.inputNetwork, form.txHash)}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                        >
-                            {sliceAddress(form.txHash)}
-                        </a>
+                        <div className={styles.msg}>
+                            <div>
+                                Transaction time may take up to 5 minutes
+                            </div>
+                            <div>
+                                Track on venombridge:{' '}
+                                <a
+                                    href={getBridgeLink(form.inputNetwork, form.txHash)}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                >
+                                    {sliceAddress(form.txHash)}
+                                </a>
+                            </div>
+                        </div>
                         <Button block onClick={form.reset}>
                             New transfer
                         </Button>
