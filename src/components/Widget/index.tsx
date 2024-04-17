@@ -20,6 +20,7 @@ import { formattedTokenAmount } from '@broxus/js-utils'
 import { action, runInAction } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import styles from './index.module.scss'
+import BigNumber from 'bignumber.js'
 
 type Props = {
     outputTokenAddress?: string
@@ -318,8 +319,10 @@ export const Widget: React.FC<Props> = observer(({
                                             ? 'Insufficient balance'
                                             : form.wrongOutputAddress
                                             ? 'Invalid venom address'
-                                            : form.minAmountValid === false
-                                            ? 'Min receive must be more than $5'
+                                            : form.minAmountValid === false && form.minAmount && form.bridgePayload.params
+                                            ? `Min input amount is ${formattedTokenAmount(form.minAmount, undefined, {
+                                                roundingMode: BigNumber.ROUND_UP
+                                            })} ${form.bridgePayload.params?.evmTokenSymbol}`
                                             : 'Exchange'}
                                     </Button>
                                 )}

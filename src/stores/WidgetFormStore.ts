@@ -58,7 +58,7 @@ export class WidgetFormStore {
         params => 'swap' in params[0].input ? params[0].input.swap : undefined,
     )
     tvmTokenPrice = new DataSync(
-        dexApiV1.currenciesUsdtPrices.currenciesUsdtPricesCreate.bind(dexApiV1)
+        dexApiV1.currenciesUsdtPrices.currenciesUsdtPricesCreate.bind(dexApiV1),
     )
 
     constructor(
@@ -84,8 +84,8 @@ export class WidgetFormStore {
                     }
                 },
                 {
-                    fireImmediately: true
-                }
+                    fireImmediately: true,
+                },
             ),
             reaction(
                 () => this.inputNetworkId,
@@ -520,10 +520,10 @@ export class WidgetFormStore {
                     }
                 }
             } else {
-                if (this.bridgeAmountToReceive && this.bridgeEvmToken.value) {
+                if (this.bridgeAmountToReceive && this.bridgePayload.params) {
                     return decimalAmount(
                         this.bridgeAmountToReceive,
-                        this.bridgeEvmToken.value.decimals,
+                        this.bridgePayload.params?.evmTokenDecimals,
                     )
                 }
             }
@@ -542,9 +542,23 @@ export class WidgetFormStore {
         return undefined
     }
 
+    get minAmount(): string | undefined {
+        if (this.amountToReceiveUsdt && this.bridgePayload.params) {
+            const inputAmount = decimalAmount(
+                this.bridgePayload.params.evmTokenAmount,
+                this.bridgePayload.params.evmTokenDecimals,
+            )
+            return new BigNumber(5).times(inputAmount).dividedBy(this.amountToReceiveUsdt).toFixed()
+        }
+        return undefined
+    }
+
     get minAmountValid(): boolean | undefined {
-        if (this.amountToReceiveUsdt) {
-            return new BigNumber(this.amountToReceiveUsdt).gte(5)
+        if (this.bridgePayload.params && this.minAmount) {
+            return new BigNumber(decimalAmount(
+                this.bridgePayload.params.evmTokenAmount,
+                this.bridgePayload.params.evmTokenDecimals,
+            )).gte(this.minAmount)
         }
         return undefined
     }
