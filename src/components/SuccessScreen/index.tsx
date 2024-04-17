@@ -30,7 +30,7 @@ export const SuccessScreen: React.FC = observer(() => {
                                 Transaction time may take up to 5 minutes
                             </div>
                             <div>
-                                Track on venombridge:{' '}
+                                Track on Venombridge:{' '}
                                 <a
                                     href={getBridgeLink(form.inputNetwork, form.txHash)}
                                     target='_blank'
