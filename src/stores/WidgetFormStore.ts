@@ -74,6 +74,7 @@ export class WidgetFormStore {
             reaction(
                 () => this.outputToken,
                 () => {
+                    this.swapPayload.reset()
                     if (this.outputToken) {
                         this.tvmTokenPrice.sync({
                             currency_addresses: [this.outputToken.address],

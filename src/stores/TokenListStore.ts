@@ -34,7 +34,6 @@ export class TokenListStore {
 
     async fetch(): Promise<void> {
         try {
-            // eslint-disable-next-line prefer-const
             let [tvmTokens, evmTokens] = await Promise.all([
                 fetch(TokenListURI)
                     .then(data => data.json())
@@ -54,8 +53,19 @@ export class TokenListStore {
                 return false
             })
 
+            tvmTokens = tvmTokens.filter(item => {
+                if (['w3w', 'wvenom', 'vnm'].includes(item.symbol.toLowerCase())) {
+                    return true
+                }
+                return false
+            })
+
             const gasTokens = currencies.tokens.filter(item => {
                 if (['avax', 'matic'].includes(item.symbol.toLowerCase())) {
+                    return false
+                }
+                const tokenType = getTokenType(item)
+                if (tokenType === 'tvm' && !['w3w', 'wvenom', 'vnm'].includes(item.symbol.toLowerCase())) {
                     return false
                 }
                 return true
