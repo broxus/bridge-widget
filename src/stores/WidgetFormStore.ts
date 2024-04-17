@@ -232,6 +232,7 @@ export class WidgetFormStore {
                     this.outputTvmAddress,
                     this.outputToken,
                     this.swapRequired,
+                    this.slippage,
                 ],
                 () => {
                     if (
