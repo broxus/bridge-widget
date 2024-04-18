@@ -51,14 +51,14 @@ export const Widget: React.FC<Props> = observer(({
         }))
 
     const inputTokenOptions = form.inputNetworkId
-        ? (tokenList.byNetwork[form.inputNetworkId] ?? [])
+        ? (tokenList.byNetworkFiltered[form.inputNetworkId] ?? [])
             .map(item => ({
                 value: getTokenId(item),
                 label: item.symbol,
             }))
         : []
 
-    const outputTokenOptions = (tokenList.byNetwork['tvm-1'] ?? [])
+    const outputTokenOptions = (tokenList.byNetworkFiltered['tvm-1'] ?? [])
         .map(item => ({
             value: getTokenId(item),
             label: item.symbol,
@@ -236,7 +236,7 @@ export const Widget: React.FC<Props> = observer(({
                                     value={inputTokenOptions.find(item => item.value === form.inputTokenId) ?? null}
                                     onCreateOption={onCreateInputToken}
                                     formatOptionLabel={({ label, value }) => {
-                                        const token = tokenList.byId[value]
+                                        const token = tokenList.byIdAll[value]
                                         return (
                                             <div className={styles.option}>
                                                 {token?.logoURI
@@ -351,7 +351,7 @@ export const Widget: React.FC<Props> = observer(({
                                     value={outputTokenOptions.find(item => item.value === form.outputTokenId) ?? null}
                                     onCreateOption={onCreateOutputToken}
                                     formatOptionLabel={({ label, value }) => {
-                                        const token = tokenList.byId[value]
+                                        const token = tokenList.byIdAll[value]
                                         return (
                                             <div className={styles.option}>
                                                 {token?.logoURI

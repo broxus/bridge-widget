@@ -10,6 +10,8 @@ export const DexApiV1BaseUrl = 'https://api.web3.world/v1'
 
 export const TokenListURI = 'https://cdn.venom.foundation/assets/mainnet/manifest.json'
 
+export const ExtraTokenListURI = 'https://raw.githubusercontent.com/venom-blockchain/tokenforge/main/manifest.json'
+
 export const AlienTokenListURI = 'https://raw.githubusercontent.com/broxus/bridge-assets/v-main-1/tokenlist/tokens.json'
 
 export const BridgeAssetsURI = 'https://raw.githubusercontent.com/broxus/bridge-assets/v-main-1/main.json'

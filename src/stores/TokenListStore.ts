@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 
-import { AlienTokenListURI, TokenListURI } from '@/config'
+import { AlienTokenListURI, ExtraTokenListURI, TokenListURI } from '@/config'
 import currencies from '@/currencies.json'
 import { Token } from '@/types'
 import {
@@ -17,7 +17,8 @@ import {
 
 export class TokenListStore {
     gasTokens: Token[] = []
-    tokens: Token[] = []
+    filteredTokens: Token[] = []
+    manifestTokens: Token[] = []
     extraTokens: Token[] = []
     ready = false
     loader = 0
@@ -34,7 +35,10 @@ export class TokenListStore {
 
     async fetch(): Promise<void> {
         try {
-            let [tvmTokens, evmTokens] = await Promise.all([
+            const [extraTvmTokens, tvmTokens, evmTokens] = await Promise.all([
+                fetch(ExtraTokenListURI)
+                    .then(data => data.json())
+                    .then(data => data.tokens as Token[]),
                 fetch(TokenListURI)
                     .then(data => data.json())
                     .then(data => data.tokens as Token[]),
@@ -43,7 +47,7 @@ export class TokenListStore {
                     .then(data => data.tokens as Token[]),
             ])
 
-            evmTokens = evmTokens.filter(item => {
+            const evmTokensFiltered = evmTokens.filter(item => {
                 if (item.chainId.toString() === '1') {
                     return true
                 }
@@ -53,14 +57,16 @@ export class TokenListStore {
                 return false
             })
 
-            tvmTokens = tvmTokens.filter(item => {
+            const tvmTokensFiltered = tvmTokens.filter(item => {
                 if (['w3w', 'wvenom', 'vnm'].includes(item.symbol.toLowerCase())) {
                     return true
                 }
                 return false
             })
 
-            const gasTokens = currencies.tokens.filter(item => {
+            const gasTokens = currencies.tokens
+
+            const gasTokensFiltered = currencies.tokens.filter(item => {
                 if (['avax', 'matic'].includes(item.symbol.toLowerCase())) {
                     return false
                 }
@@ -71,20 +77,25 @@ export class TokenListStore {
                 return true
             })
 
-            const entries = [...tvmTokens, ...evmTokens, ...gasTokens]
+            const allEntries = [...tvmTokens, ...extraTvmTokens, ...evmTokens, ...gasTokens]
                 .map(item => [getTokenId(item), item] as const)
 
-            const unique = Object.values(Object.fromEntries(entries))
+            const filteredEntries = [...tvmTokensFiltered, ...evmTokensFiltered, ...gasTokensFiltered]
+                .map(item => [getTokenId(item), item] as const)
+
+            const manifestTokens = Object.values(Object.fromEntries(allEntries))
+            const filteredTokens = Object.values(Object.fromEntries(filteredEntries))
 
             runInAction(() => {
-                this.tokens = unique
+                this.manifestTokens = manifestTokens
+                this.filteredTokens = filteredTokens
                 this.gasTokens = gasTokens
                 this.ready = true
             })
         } catch (e) {
             console.error(e)
             runInAction(() => {
-                this.tokens = []
+                this.filteredTokens = []
                 this.gasTokens = []
                 this.ready = false
             })
@@ -92,7 +103,7 @@ export class TokenListStore {
     }
 
     async addToken(tokenId: string): Promise<boolean> {
-        if (this.byId[tokenId]) {
+        if (this.byIdFiltered[tokenId]) {
             return true
         }
         let success = false
@@ -121,22 +132,32 @@ export class TokenListStore {
         return success
     }
 
-    get byId(): { [k: string]: Token | undefined } {
-        return Object.fromEntries([...this.tokens, ...this.extraTokens]
-            .map(item => [getTokenId(item), item]))
+    get byIdAll(): { [k: string]: Token | undefined } {
+        return Object.fromEntries(
+            [...this.extraTokens, ...this.filteredTokens, ...this.manifestTokens]
+                .map(item => [getTokenId(item), item])
+        )
     }
 
-    get byNetwork(): { [k: string]: Token[] | undefined } {
-        return [...this.tokens, ...this.extraTokens].reduce<{ [k: string]: Token[] }>((acc, item) => {
-            const networkId = getNetworkId({
-                chainId: item.chainId,
-                type: getTokenType(item),
-            })
-            return {
-                ...acc,
-                [networkId]: [...(acc[networkId] ?? []), item],
-            }
-        }, {})
+    get byIdFiltered(): { [k: string]: Token | undefined } {
+        return Object.fromEntries(
+            [...this.extraTokens, ...this.filteredTokens]
+                .map(item => [getTokenId(item), item])
+        )
+    }
+
+    get byNetworkFiltered(): { [k: string]: Token[] | undefined } {
+        return [...this.filteredTokens, ...this.extraTokens]
+            .reduce<{ [k: string]: Token[] }>((acc, item) => {
+                const networkId = getNetworkId({
+                    chainId: item.chainId,
+                    type: getTokenType(item),
+                })
+                return {
+                    ...acc,
+                    [networkId]: [...(acc[networkId] ?? []), item],
+                }
+            }, {})
     }
 
     get gasTokensById(): { [k: string]: Token | undefined } {

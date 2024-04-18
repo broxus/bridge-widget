@@ -450,11 +450,11 @@ export class WidgetFormStore {
     }
 
     get inputToken(): Token | undefined {
-        return this.inputTokenId ? this.tokenList.byId[this.inputTokenId] : undefined
+        return this.inputTokenId ? this.tokenList.byIdAll[this.inputTokenId] : undefined
     }
 
     get outputToken(): Token | undefined {
-        return this.outputTokenId ? this.tokenList.byId[this.outputTokenId] : undefined
+        return this.outputTokenId ? this.tokenList.byIdAll[this.outputTokenId] : undefined
     }
 
     get isGasToken(): boolean | undefined {
@@ -545,15 +545,15 @@ export class WidgetFormStore {
                         chainId: 1,
                         address: this.swapPayload.params.toCurrencyAddress,
                     })
-                    if (this.tokenList.byId[tokenId]) {
+                    if (this.tokenList.byIdAll[tokenId]) {
                         return {
                             min: decimalAmount(
                                 this.swapPayload.value.minTokenAmountReceive,
-                                this.tokenList.byId[tokenId]!.decimals,
+                                this.tokenList.byIdAll[tokenId]!.decimals,
                             ),
                             max: decimalAmount(
                                 this.swapPayload.value.tokenAmountReceive,
-                                this.tokenList.byId[tokenId]!.decimals,
+                                this.tokenList.byIdAll[tokenId]!.decimals,
                             ),
                         }
                     }
